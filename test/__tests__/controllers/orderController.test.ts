@@ -31,7 +31,18 @@ const mockRequest = () => {
     cookies: {},
     params: {},
     query: {},
-    user: { id: "testUserId", _id: "testUserId" },
+    user: {
+      _id: "testUserId",
+      name: "Test User",
+      email: "test@example.com",
+      password: "hashedpassword",
+      avatar: { public_id: "avatar123", url: "http://avatar.url" },
+      role: "user",
+      createdAt: new Date(),
+      getJWTToken: vi.fn(),
+      comparePassword: vi.fn(),
+      getResetPasswordToken: vi.fn(),
+    } as any,
   };
   return req as Request;
 };
@@ -47,7 +58,7 @@ const mockResponse = () => {
 describe("Order Controller", () => {
   let req: Request;
   let res: Response;
-  let next: NextFunction;
+  let next: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     req = mockRequest();
@@ -211,7 +222,7 @@ describe("Order Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Order not found with this Id");
       expect(error.statusCode).toBe(404);
@@ -239,7 +250,7 @@ describe("Order Controller", () => {
       vi.mocked(Order.find).mockResolvedValue(mockOrders as any);
 
       // Execute
-      await orderController.myOrders(req, res);
+      await orderController.myOrders(req, res, next);
 
       // Assert
       expect(Order.find).toHaveBeenCalledWith({ user: "user123" });
@@ -267,12 +278,12 @@ describe("Order Controller", () => {
         },
       ];
 
-      const totalAmount = 250;
+      // totalAmount is not used directly, so removed to fix TS warning
 
       vi.mocked(Order.find).mockResolvedValue(mockOrders as any);
 
       // Execute
-      await orderController.getAllOrders(req, res);
+      await orderController.getAllOrders(req, res, next);
 
       // Assert
       expect(Order.find).toHaveBeenCalled();
@@ -291,7 +302,7 @@ describe("Order Controller", () => {
       vi.mocked(Order.find).mockResolvedValue(mockOrders as any);
 
       // Execute
-      await orderController.getAllOrders(req, res);
+      await orderController.getAllOrders(req, res, next);
 
       // Assert
       expect(res.json).toHaveBeenCalledWith({
@@ -393,7 +404,7 @@ describe("Order Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("You have already delivered this order");
       expect(error.statusCode).toBe(400);
@@ -411,7 +422,7 @@ describe("Order Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Order not found with this Id");
       expect(error.statusCode).toBe(404);
@@ -487,7 +498,7 @@ describe("Order Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Order not found with this Id");
       expect(error.statusCode).toBe(404);

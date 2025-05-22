@@ -84,7 +84,7 @@ const mockResponse = () => {
 describe("User Controller", () => {
   let req: Request;
   let res: Response;
-  let next: NextFunction;
+  let next: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     req = mockRequest();
@@ -164,7 +164,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      expect(next.mock.calls[0][0]).toBeInstanceOf(ErrorHandler);
+      expect((next as any).mock.calls[0][0]).toBeInstanceOf(ErrorHandler);
     });
   });
 
@@ -205,7 +205,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Please Enter Email & Password");
       expect(error.statusCode).toBe(400);
@@ -227,7 +227,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Invalid email or password");
       expect(error.statusCode).toBe(401);
@@ -251,7 +251,7 @@ describe("User Controller", () => {
       } as any);
 
       // Set up next to collect the ErrorHandler
-      next.mockImplementation(error => {
+      (next as any).mockImplementation(() => {
         // Just capture the error, don't do anything with it
       });
 
@@ -261,7 +261,7 @@ describe("User Controller", () => {
       // Assert
       expect(mockUser.comparePassword).toHaveBeenCalledWith("wrongpassword");
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Invalid email or password");
       expect(error.statusCode).toBe(401);
@@ -271,7 +271,7 @@ describe("User Controller", () => {
   describe("logout", () => {
     it("should logout user successfully", async () => {
       // Execute
-      await userController.logout(req, res);
+      await userController.logout(req, res, next);
 
       // Assert
       expect(res.cookie).toHaveBeenCalledWith(
@@ -339,7 +339,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("User not found");
       expect(error.statusCode).toBe(404);
@@ -366,7 +366,7 @@ describe("User Controller", () => {
       vi.mocked(User.findOne).mockResolvedValue(mockUser as any);
 
       // Setup next to capture error
-      next.mockImplementation(error => {
+      (next as any).mockImplementation(() => {
         // This will be captured in the expect below
       });
 
@@ -378,7 +378,7 @@ describe("User Controller", () => {
       expect(mockUser.save).toHaveBeenCalledWith({ validateBeforeSave: false });
       expect(next).toHaveBeenCalled();
 
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe("Email sending failed");
 
@@ -477,7 +477,7 @@ describe("User Controller", () => {
       vi.mocked(User.findById).mockResolvedValue(mockUser as any);
 
       // Execute
-      await userController.getUserDetails(req, res);
+      await userController.getUserDetails(req, res, next);
 
       // Assert
       expect(User.findById).toHaveBeenCalledWith("user123");
@@ -518,7 +518,7 @@ describe("User Controller", () => {
       expect(mockUser.comparePassword).toHaveBeenCalledWith("old_password");
 
       // Set the password in the mock
-      mockUser.password = "new_password";
+      (mockUser as any).password = "new_password";
 
       expect(mockUser.password).toBe("new_password");
       expect(mockUser.save).toHaveBeenCalled();
@@ -544,7 +544,7 @@ describe("User Controller", () => {
       } as any);
 
       // Setup next to capture error
-      next.mockImplementation(error => {
+      (next as any).mockImplementation(() => {
         // Will be captured below
       });
 
@@ -554,7 +554,7 @@ describe("User Controller", () => {
       // Assert
       expect(mockUser.comparePassword).toHaveBeenCalledWith("wrong_password");
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Old password is incorrect");
       expect(error.statusCode).toBe(400);
@@ -583,7 +583,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Password does not match");
       expect(error.statusCode).toBe(400);
@@ -607,7 +607,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("User not found");
       expect(error.statusCode).toBe(404);
@@ -712,7 +712,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("User not found");
       expect(error.statusCode).toBe(404);
@@ -734,7 +734,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const calledError = next.mock.calls[0][0];
+      const calledError = (next as any).mock.calls[0][0];
       expect(calledError).toBeInstanceOf(ErrorHandler);
       expect(calledError.message).toBe("Update failed");
       expect(calledError.statusCode).toBe(500);
@@ -752,7 +752,7 @@ describe("User Controller", () => {
       vi.mocked(User.find).mockResolvedValue(mockUsers as any);
 
       // Execute
-      await userController.getAllUsers(req, res);
+      await userController.getAllUsers(req, res, next);
 
       // Assert
       expect(User.find).toHaveBeenCalled();
@@ -800,7 +800,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("User does not exist with Id: nonexistent_user");
       expect(error.statusCode).toBe(404);
@@ -825,7 +825,7 @@ describe("User Controller", () => {
       } as any);
 
       // Execute
-      await userController.updateUserRole(req, res);
+      await userController.updateUserRole(req, res, next);
 
       // Assert
       expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
@@ -885,7 +885,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("User does not exist with Id: nonexistent_user");
       expect(error.statusCode).toBe(400);
@@ -911,7 +911,7 @@ describe("User Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Deletion failed");
       expect(error.statusCode).toBe(500);

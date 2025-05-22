@@ -33,7 +33,7 @@ const mockRequest = () => {
     cookies: {},
     params: {},
     query: {},
-    user: { id: "testUserId", _id: "testUserId" },
+    user: { id: "testUserId", _id: "testUserId" } as any,
   };
   return req as Request;
 };
@@ -57,7 +57,7 @@ const mockApiFeaturesMethods = {
 describe("Product Controller", () => {
   let req: Request;
   let res: Response;
-  let next: NextFunction;
+  let next: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     req = mockRequest();
@@ -66,7 +66,9 @@ describe("Product Controller", () => {
     vi.clearAllMocks();
 
     // Setup ApiFeatures mock
-    (ApiFeatures as unknown as jest.Mock).mockImplementation(() => mockApiFeaturesMethods);
+    (ApiFeatures as unknown as ReturnType<typeof vi.fn>).mockImplementation?.(
+      () => mockApiFeaturesMethods
+    );
   });
 
   afterEach(() => {
@@ -193,7 +195,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      expect(next.mock.calls[0][0]).toBeInstanceOf(ErrorHandler);
+      expect((next as any).mock.calls[0][0]).toBeInstanceOf(ErrorHandler);
     });
   });
 
@@ -214,7 +216,7 @@ describe("Product Controller", () => {
       mockApiFeaturesMethods.query = mockProducts as any;
 
       // Execute
-      await productController.getAllProducts(req, res);
+      await productController.getAllProducts(req, res, next);
 
       // Assert
       expect(Product.countDocuments).toHaveBeenCalled();
@@ -249,7 +251,7 @@ describe("Product Controller", () => {
       vi.mocked(Product.find).mockResolvedValue(mockProducts as any);
 
       // Execute
-      await productController.getAdminProducts(req, res);
+      await productController.getAdminProducts(req, res, next);
 
       // Assert
       expect(Product.find).toHaveBeenCalled();
@@ -298,7 +300,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product not found");
       expect(error.statusCode).toBe(404);
@@ -402,7 +404,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product not found");
       expect(error.statusCode).toBe(404);
@@ -486,7 +488,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product not found");
       expect(error.statusCode).toBe(404);
@@ -621,7 +623,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product not found");
       expect(error.statusCode).toBe(404);
@@ -671,7 +673,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product not found");
       expect(error.statusCode).toBe(404);
@@ -781,7 +783,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product ID and Review ID are required");
       expect(error.statusCode).toBe(400);
@@ -798,7 +800,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error2 = next.mock.calls[0][0];
+      const error2 = (next as any).mock.calls[0][0];
       expect(error2).toBeInstanceOf(ErrorHandler);
       expect(error2.message).toBe("Product ID and Review ID are required");
       expect(error2.statusCode).toBe(400);
@@ -818,7 +820,7 @@ describe("Product Controller", () => {
 
       // Assert
       expect(next).toHaveBeenCalled();
-      const error = next.mock.calls[0][0];
+      const error = (next as any).mock.calls[0][0];
       expect(error).toBeInstanceOf(ErrorHandler);
       expect(error.message).toBe("Product not found");
       expect(error.statusCode).toBe(404);
