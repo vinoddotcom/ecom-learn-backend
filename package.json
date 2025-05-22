@@ -15,9 +15,9 @@
   "type": "commonjs",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "lint": "eslint . --ext .ts",
-    "build": "tsup src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only server.ts",
+    "lint": "eslint .",
+    "build": "tsup server.ts",
     "start": "node dist/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -26,29 +26,41 @@
     "prettify": "prettier --write ."
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.6.1",
     "cors": "2.8.5",
+    "crypto-js": "^4.2.0",
     "dotenv": "16.3.1",
-    "express": "4.18.2",
-    "mongoose": "8.2.0",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.15.0",
     "swagger-jsdoc": "6.2.8",
-    "swagger-ui-express": "4.6.3"
+    "swagger-ui-express": "4.6.3",
+    "validator": "^13.15.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "@types/cors": "2.8.17",
     "@types/express": "4.17.21",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "20.11.19",
     "@types/supertest": "2.0.12",
+    "@types/validator": "^13.15.1",
     "@typescript-eslint/eslint-plugin": "6.21.0",
     "@typescript-eslint/parser": "6.21.0",
-    "eslint": "^8.57.1",
+    "@vitest/coverage-v8": "^3.1.4",
+    "@vitest/ui": "^3.1.4",
+    "eslint": "^9.27.0",
     "globals": "^16.1.0",
+    "mongodb-memory-server": "^10.1.4",
     "prettier": "^3.5.3",
     "supertest": "6.3.4",
     "ts-jest": "29.1.2",
     "ts-node-dev": "2.0.0",
-    "tsup": "8.0.1",
+    "tsup": "^8.5.0",
     "typescript": "5.4.2",
-    "typescript-eslint": "^8.32.1"
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^3.1.4"
   }
 }

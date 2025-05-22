@@ -10,4 +10,10 @@ export default defineConfig([
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
   tseslint.configs.recommended,
+  {
+    files: ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**/*.ts", "./tests/**"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off", // <-- only applies to test files
+    },
+  },
 ]);
