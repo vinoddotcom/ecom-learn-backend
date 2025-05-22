@@ -300,6 +300,7 @@ export const deleteUser = catchAsyncErrors(
       const imageId = user.avatar.public_id;
       await deleteFromCloudinary(imageId);
 
+      // Call deleteOne method on the user instance
       await user.deleteOne();
 
       res.status(200).json({
