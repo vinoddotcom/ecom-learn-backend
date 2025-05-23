@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only server.ts",
     "lint": "eslint .",
-    "build": "tsup server.ts",
+    "build": "tsup",
     "start": "node dist/server.js",
     "test": "vitest run",
     "test:watch": "vitest",
