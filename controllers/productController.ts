@@ -45,19 +45,20 @@ export const createProduct = catchAsyncErrors(
 
 // Get All Products
 export const getAllProducts = catchAsyncErrors(async (req: Request, res: Response) => {
-  const resultPerPage = 8;
+  const resultPerPage = Number(req.query.limit) || 8;
   const productsCount = await Product.countDocuments();
 
   // Convert req.query to the correct type
   const apiFeature = new ApiFeatures<IProduct>(Product.find(), req.query).search().filter();
 
-  let products = await apiFeature.query;
+  // Clone the query to get the count without pagination
+  const filteredProductsCount = (await apiFeature.query.clone()).length;
 
-  const filteredProductsCount = products.length;
-
+  // Apply pagination to the original query
   apiFeature.pagination(resultPerPage);
 
-  products = await apiFeature.query;
+  // Execute the paginated query only once
+  const products = await apiFeature.query;
 
   res.status(200).json({
     success: true,
@@ -261,7 +262,7 @@ export const deleteReview = catchAsyncErrors(
     interface ReviewWithId extends IReview {
       _id: Types.ObjectId;
     }
-    
+
     const reviews = product.reviews.filter(rev => {
       // Use proper typing instead of any
       const review = rev as ReviewWithId;
