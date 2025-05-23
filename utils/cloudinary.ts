@@ -1,4 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+
+// Load environment variables if not in production
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  dotenv.config();
+}
 
 // CloudinaryUploadResponse interface for TypeScript type safety
 export interface CloudinaryUploadResponse {
@@ -27,11 +33,23 @@ export interface CloudinaryDeleteResponse {
   [key: string]: unknown;
 }
 
+// Type for Cloudinary upload response
+interface CloudinaryResult {
+  public_id: string;
+  url: string;
+  secure_url: string;
+  format: string;
+  width: number;
+  height: number;
+  resource_type: string;
+  [key: string]: unknown;
+}
+
 // Configure Cloudinary with environment variables
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_NAME || "",
+  api_key: process.env.CLOUDINARY_API_KEY || "",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "",
 });
 
 /**
@@ -47,7 +65,15 @@ export const uploadToCloudinary = async (
   options: CloudinaryUploadOptions = {}
 ): Promise<CloudinaryUploadResponse> => {
   try {
-    const result = await cloudinary.uploader.upload(fileString, {
+    // Type assertion for the cloudinary uploader
+    const uploader = (
+      cloudinary as unknown as {
+        uploader: {
+          upload: (path: string, options?: Record<string, unknown>) => Promise<CloudinaryResult>;
+        };
+      }
+    ).uploader;
+    const result = await uploader.upload(fileString, {
       folder,
       ...options,
     });
@@ -74,7 +100,15 @@ export const uploadToCloudinary = async (
  */
 export const deleteFromCloudinary = async (publicId: string): Promise<CloudinaryDeleteResponse> => {
   try {
-    return await cloudinary.uploader.destroy(publicId);
+    // Type assertion for the cloudinary uploader
+    const uploader = (
+      cloudinary as unknown as {
+        uploader: {
+          destroy: (publicId: string) => Promise<CloudinaryDeleteResponse>;
+        };
+      }
+    ).uploader;
+    return await uploader.destroy(publicId);
   } catch (error) {
     console.error("Error deleting from Cloudinary:", error);
     throw new Error(`Delete failed: ${(error as Error).message}`);
