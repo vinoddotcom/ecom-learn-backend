@@ -46,11 +46,13 @@ const userSchema = new mongoose.Schema({
   avatar: {
     public_id: {
       type: String,
-      required: true,
+      required: false,
+      default: "default_avatar/default",
     },
     url: {
       type: String,
-      required: true,
+      required: false,
+      default: "https://res.cloudinary.com/demo/image/upload/v1580125506/default_avatar.png",
     },
   },
   role: {
@@ -77,16 +79,12 @@ userSchema.pre("save", async function (next) {
 // JWT TOKEN
 userSchema.methods.getJWTToken = function (): string {
   // Set default values for JWT configuration if environment variables aren't set
-  const jwtSecret = process.env.JWT_SECRET || 'fallback_secret_key_do_not_use_in_production';
-  const jwtExpire = process.env.JWT_EXPIRE || '7d';
-  
+  const jwtSecret = process.env.JWT_SECRET || "fallback_secret_key_do_not_use_in_production";
+  const jwtExpire = process.env.JWT_EXPIRE || "7d";
+
   // @ts-expect-error - Ignoring type issues with jwt.sign
   // The jwt.sign function accepts these parameters correctly at runtime
-  return jwt.sign(
-    { id: this._id }, 
-    jwtSecret, 
-    { expiresIn: jwtExpire }
-  );
+  return jwt.sign({ id: this._id }, jwtSecret, { expiresIn: jwtExpire });
 };
 
 // Compare Password

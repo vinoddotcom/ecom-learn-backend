@@ -7,6 +7,7 @@
 import express from "express";
 // Swagger setup
 import setupSwagger from "./setupSwagger";
+import setupSwaggerEditor from "./setupSwaggerEditor";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import fileUpload from "express-fileupload";
@@ -24,6 +25,8 @@ import orderRoutes from "./routes/orderRoute";
 const app = express();
 // Setup Swagger API docs
 setupSwagger(app);
+// Setup Swagger Editor
+setupSwaggerEditor(app);
 
 // Config
 if (process.env.NODE_ENV !== "PRODUCTION") {

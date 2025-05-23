@@ -12,20 +12,29 @@ export const registerUser = catchAsyncErrors(
     try {
       const { name, email, password } = req.body;
 
-      // Upload avatar image to Cloudinary
-      const myCloud = await uploadToCloudinary(req.body.avatar, "avatars", {
-        width: 150,
-        crop: "scale",
-      });
+      let avatarData = {
+        public_id: "default_avatar/default",
+        url: "https://res.cloudinary.com/demo/image/upload/v1580125506/default_avatar.png",
+      };
+
+      // Upload avatar image to Cloudinary if provided
+      if (req.body.avatar) {
+        const myCloud = await uploadToCloudinary(req.body.avatar, "avatars", {
+          width: 150,
+          crop: "scale",
+        });
+
+        avatarData = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
 
       const user = await User.create({
         name,
         email,
         password,
-        avatar: {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        },
+        avatar: avatarData,
       });
 
       sendToken(user, 201, res);

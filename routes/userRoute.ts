@@ -54,8 +54,11 @@ const router = express.Router();
  *           properties:
  *             public_id:
  *               type: string
+ *               description: Cloudinary public ID for the avatar image
  *             url:
  *               type: string
+ *               description: URL to access the avatar image
+ *           description: User's avatar image information (optional, default provided)
  *         role:
  *           type: string
  *           enum: [user, admin]
@@ -92,7 +95,6 @@ const router = express.Router();
  *         - name
  *         - email
  *         - password
- *         - avatar
  *       properties:
  *         name:
  *           type: string
@@ -105,6 +107,7 @@ const router = express.Router();
  *         avatar:
  *           type: string
  *           format: binary
+ *           description: Optional user avatar image (base64 encoded)
  *       example:
  *         name: John Doe
  *         email: john@example.com
@@ -118,7 +121,7 @@ const router = express.Router();
  *     tags:
  *       - User Authentication
  *     summary: Register a new user
- *     description: Create a new user account with name, email, password and profile picture
+ *     description: Create a new user account with name, email, password and optional profile picture
  *     requestBody:
  *       required: true
  *       content:
@@ -361,6 +364,7 @@ router.route("/password/update").put(isAuthenticatedUser, updatePassword);
  *               avatar:
  *                 type: string
  *                 format: binary
+ *                 description: Optional - new profile picture
  *     responses:
  *       200:
  *         description: Profile updated successfully
