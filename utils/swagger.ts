@@ -34,20 +34,14 @@ const swaggerOptions = {
           type: "apiKey",
           in: "cookie",
           name: "token",
+          description: "JWT token stored in browser cookies. Login first to get this token.",
         },
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
+        // Note: bearerAuth is kept for reference but not used in the API
+        // Remove if no longer needed
       },
     },
   },
-  apis: [
-    "./routes/*.ts",
-    "./controllers/*.ts",
-    "./models/*.ts",
-  ],
+  apis: ["./routes/*.ts", "./controllers/*.ts", "./models/*.ts"],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);

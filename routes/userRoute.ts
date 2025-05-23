@@ -279,7 +279,6 @@ router.route("/logout").get(logout);
  *     description: Retrieves the profile of the currently logged in user
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: User details fetched successfully
@@ -307,7 +306,6 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
  *     description: Update the password for the currently logged in user
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -348,7 +346,6 @@ router.route("/password/update").put(isAuthenticatedUser, updatePassword);
  *     description: Update the name and email for the currently logged in user
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -383,7 +380,6 @@ router.route("/me/update").put(isAuthenticatedUser, updateProfile);
  *     description: Retrieve a list of all user accounts (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all users
@@ -415,7 +411,6 @@ router.route("/admin/users").get(isAuthenticatedUser, authorizeRoles("admin"), g
  *     description: Retrieve details for a specific user (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -449,7 +444,6 @@ router.route("/admin/users").get(isAuthenticatedUser, authorizeRoles("admin"), g
  *     description: Change a user's role (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -486,7 +480,6 @@ router.route("/admin/users").get(isAuthenticatedUser, authorizeRoles("admin"), g
  *     description: Delete a user account (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

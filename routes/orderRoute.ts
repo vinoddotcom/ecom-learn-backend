@@ -147,7 +147,6 @@ const router = express.Router();
  *     description: Place a new order with product details, shipping information and payment details
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -210,7 +209,6 @@ router.route("/order/new").post(isAuthenticatedUser, newOrder);
  *     description: Get detailed information about a specific order
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -247,7 +245,6 @@ router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
  *     description: Get all orders placed by the currently logged in user
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Orders retrieved successfully
@@ -277,7 +274,6 @@ router.route("/orders/me").get(isAuthenticatedUser, myOrders);
  *     description: Retrieve a list of all orders (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Orders retrieved successfully
@@ -311,7 +307,6 @@ router.route("/admin/orders").get(isAuthenticatedUser, authorizeRoles("admin"), 
  *     description: Update the status of an order (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -351,7 +346,6 @@ router.route("/admin/orders").get(isAuthenticatedUser, authorizeRoles("admin"), 
  *     description: Remove an order from the database (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id

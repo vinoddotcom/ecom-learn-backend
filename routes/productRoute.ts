@@ -52,13 +52,16 @@ const router = express.Router();
  *           default: 0
  *         images:
  *           type: array
+ *           description: Array of product images. Note - when creating/updating products, send base64 encoded strings, not these objects.
  *           items:
  *             type: object
  *             properties:
  *               public_id:
  *                 type: string
+ *                 description: Cloudinary public ID for the image
  *               url:
  *                 type: string
+ *                 description: Cloudinary URL to access the image
  *         category:
  *           type: string
  *           description: Product category
@@ -176,7 +179,6 @@ router.route("/products").get(getAllProducts);
  *     description: Get all products for admin dashboard without pagination
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all products for admin
@@ -205,10 +207,9 @@ router.route("/admin/products").get(isAuthenticatedUser, authorizeRoles("admin")
  *     tags:
  *       - Admin
  *     summary: Create a new product
- *     description: Add a new product to the database (Admin only)
+ *     description: Add a new product to the database (Admin only). For images, send an array of base64-encoded image strings which will be uploaded to Cloudinary.
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -234,13 +235,18 @@ router.route("/admin/products").get(isAuthenticatedUser, authorizeRoles("admin")
  *                 type: number
  *               images:
  *                 type: array
+ *                 description: Array of base64 encoded image strings which will be uploaded to Cloudinary
  *                 items:
- *                   type: object
- *                   properties:
- *                     public_id:
- *                       type: string
- *                     url:
- *                       type: string
+ *                   type: string
+ *                   format: byte
+ *                   description: Base64 encoded image string (e.g. "data:image/jpeg;base64,/9j/4AAQ...")
+ *           example:
+ *             name: "iPhone 15 Pro"
+ *             description: "Apple's latest flagship phone with advanced features"
+ *             price: 999.99
+ *             category: "Electronics"
+ *             Stock: 50
+ *             images: ["data:image/jpeg;base64,/9j/4AAQSkZJRgABA...", "data:image/jpeg;base64,/9j/5BBQSkZJRgABA..."]
  *     responses:
  *       201:
  *         description: Product created successfully
@@ -271,10 +277,9 @@ router
  *     tags:
  *       - Admin
  *     summary: Update a product
- *     description: Update an existing product by ID (Admin only)
+ *     description: Update an existing product by ID (Admin only). For images, send an array of base64-encoded image strings which will be uploaded to Cloudinary.
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -301,13 +306,18 @@ router
  *                 type: number
  *               images:
  *                 type: array
+ *                 description: Array of base64 encoded image strings which will be uploaded to Cloudinary
  *                 items:
- *                   type: object
- *                   properties:
- *                     public_id:
- *                       type: string
- *                     url:
- *                       type: string
+ *                   type: string
+ *                   format: byte
+ *                   description: Base64 encoded image string (e.g. "data:image/jpeg;base64,/9j/4AAQ...")
+ *           example:
+ *             name: "iPhone 15 Pro"
+ *             description: "Updated description with new features"
+ *             price: 949.99
+ *             category: "Electronics"
+ *             Stock: 75
+ *             images: ["data:image/jpeg;base64,/9j/4AAQSkZJRgABA...", "data:image/jpeg;base64,/9j/5BBQSkZJRgABA..."]
  *     responses:
  *       200:
  *         description: Product updated successfully
@@ -336,7 +346,6 @@ router
  *     description: Remove a product from the database (Admin only)
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -401,7 +410,6 @@ router.route("/product/:id").get(getProductDetails);
  *     description: Add a new review or update an existing review for a product
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -488,7 +496,6 @@ router.route("/review").put(isAuthenticatedUser, createProductReview);
  *     description: Remove a specific review from a product
  *     security:
  *       - cookieAuth: []
- *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: productId
