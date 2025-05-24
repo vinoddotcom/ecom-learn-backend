@@ -24,6 +24,7 @@ export interface CloudinaryUploadOptions {
   crop?: string;
   quality?: string;
   format?: string;
+  resource_type?: string;
   [key: string]: unknown;
 }
 
@@ -54,13 +55,13 @@ cloudinary.config({
 
 /**
  * Uploads a file to Cloudinary
- * @param fileString Base64 string of the file to upload
+ * @param fileData File data (either base64 string, buffer or file path)
  * @param folder Folder to upload to
  * @param options Additional options for the upload
  * @returns Promise with upload result
  */
 export const uploadToCloudinary = async (
-  fileString: string,
+  fileData: string | Buffer,
   folder: string,
   options: CloudinaryUploadOptions = {}
 ): Promise<CloudinaryUploadResponse> => {
@@ -73,7 +74,21 @@ export const uploadToCloudinary = async (
         };
       }
     ).uploader;
-    const result = await uploader.upload(fileString, {
+
+    let fileStr: string;
+    
+    // If it's a buffer, convert to base64 data URI
+    if (Buffer.isBuffer(fileData)) {
+      // Determine MIME type (default to image/jpeg if unknown)
+      // This is a simplified approach - in production, you would want to detect the actual mimetype
+      const mimeType = 'image/jpeg';
+      fileStr = `data:${mimeType};base64,${fileData.toString('base64')}`;
+    } else {
+      // If it's already a string, use it directly
+      fileStr = fileData;
+    }
+
+    const result = await uploader.upload(fileStr, {
       folder,
       ...options,
     });

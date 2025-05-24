@@ -5,33 +5,45 @@ import catchAsyncErrors from "../middleware/catchAsyncErrors";
 import ApiFeatures from "../utils/apifeatures";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary";
 import { ObjectId, Types } from "mongoose";
+import { UploadedFile } from "express-fileupload";
 
 // Create Product -- Admin
 export const createProduct = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let images = [];
-
-      if (typeof req.body.images === "string") {
-        images.push(req.body.images);
-      } else {
-        images = req.body.images;
-      }
-
+      // Process uploaded images if any
       const imagesLinks = [];
-
-      for (let i = 0; i < images.length; i++) {
-        const result = await uploadToCloudinary(images[i], "products");
-        imagesLinks.push({
-          public_id: result.public_id,
-          url: result.secure_url,
-        });
+      
+      if (req.files) {
+        // Check if images field exists and process uploaded files
+        if (req.files.images) {
+          const imageFiles = Array.isArray(req.files.images) 
+            ? req.files.images as UploadedFile[]
+            : [req.files.images as UploadedFile];
+          
+          for (const file of imageFiles) {
+            // Use file buffer directly instead of converting to base64
+            const result = await uploadToCloudinary(file.data, "products");
+            imagesLinks.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          }
+        }
       }
 
-      req.body.images = imagesLinks;
-      req.body.user = req.user!.id;
+      // Create product with form data and image links
+      const productData = {
+        name: req.body.name,
+        price: Number(req.body.price),
+        description: req.body.description,
+        category: req.body.category,
+        Stock: Number(req.body.stock),
+        user: req.user!.id,
+        images: imagesLinks.length > 0 ? imagesLinks : undefined
+      };
 
-      const product = await Product.create(req.body);
+      const product = await Product.create(productData);
 
       res.status(201).json({
         success: true,
@@ -105,39 +117,60 @@ export const updateProduct = catchAsyncErrors(
         return next(new ErrorHandler("Product not found", 404));
       }
 
-      // Images Start Here
-      let images = [];
-
-      if (typeof req.body.images === "string") {
-        images.push(req.body.images);
-      } else if (req.body.images) {
-        images = req.body.images;
-      }
-
-      if (images !== undefined && images.length > 0) {
-        // Deleting Images From Cloudinary
+      // Process uploaded images
+      let imagesLinks = [];
+      
+      // Keep existing images if no new ones are provided
+      if (!req.files || (req.files && !req.files.images)) {
+        // No new images, keep existing ones
+        imagesLinks = product.images;
+      } else {
+        // New images are being uploaded, delete old ones
         for (let i = 0; i < product.images.length; i++) {
           await deleteFromCloudinary(product.images[i].public_id);
         }
-
-        const imagesLinks = [];
-
-        for (let i = 0; i < images.length; i++) {
-          const result = await uploadToCloudinary(images[i], "products");
-          imagesLinks.push({
-            public_id: result.public_id,
-            url: result.secure_url,
-          });
+        
+        // Process new images
+        if (req.files && req.files.images) {
+          const imageFiles = Array.isArray(req.files.images) 
+            ? req.files.images as UploadedFile[]
+            : [req.files.images as UploadedFile];
+            
+          for (const file of imageFiles) {
+            // Use file buffer directly instead of converting to base64
+            const result = await uploadToCloudinary(file.data, "products");
+            imagesLinks.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          }
         }
-
-        req.body.images = imagesLinks;
       }
 
-      const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false,
-      });
+      // Prepare update data from form fields
+      const updateData = {
+        name: req.body.name,
+        price: req.body.price ? Number(req.body.price) : undefined,
+        description: req.body.description,
+        category: req.body.category,
+        Stock: req.body.stock ? Number(req.body.stock) : undefined,
+        images: imagesLinks
+      };
+
+      // Update only fields that are present in the request
+      const filteredUpdateData = Object.fromEntries(
+        Object.entries(updateData).filter(([, v]) => v !== undefined)
+      );
+
+      const updatedProduct = await Product.findByIdAndUpdate(
+        req.params.id,
+        filteredUpdateData,
+        {
+          new: true,
+          runValidators: true,
+          useFindAndModify: false,
+        }
+      );
 
       res.status(200).json({
         success: true,

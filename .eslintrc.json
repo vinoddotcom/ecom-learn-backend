@@ -8,7 +8,7 @@
   "env": {
     "node": true,
     "es6": true,
-    "jest": true
+    "vites": true
   },
   "rules": {
     "semi": ["error", "always"],

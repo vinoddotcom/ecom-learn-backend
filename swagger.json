@@ -1,0 +1,1862 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "E-Commerce API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for the E-Commerce platform",
+    "license": {
+      "name": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    },
+    "contact": {
+      "name": "API Support",
+      "url": "https://github.com/vinoddotcom/ecom-learn-backend"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token",
+        "description": "JWT token stored in browser cookies. Login first to get this token."
+      }
+    },
+    "schemas": {
+      "OrderItem": {
+        "type": "object",
+        "required": [
+          "name",
+          "price",
+          "quantity",
+          "image",
+          "product"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the product"
+          },
+          "price": {
+            "type": "number",
+            "description": "Price of the product"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Quantity ordered"
+          },
+          "image": {
+            "type": "string",
+            "description": "Image URL of the product"
+          },
+          "product": {
+            "type": "string",
+            "description": "ID of the product"
+          }
+        }
+      },
+      "ShippingInfo": {
+        "type": "object",
+        "required": [
+          "address",
+          "city",
+          "state",
+          "country",
+          "pinCode",
+          "phoneNo"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Street address"
+          },
+          "city": {
+            "type": "string",
+            "description": "City name"
+          },
+          "state": {
+            "type": "string",
+            "description": "State or province"
+          },
+          "country": {
+            "type": "string",
+            "description": "Country name"
+          },
+          "pinCode": {
+            "type": "number",
+            "description": "Postal or PIN code"
+          },
+          "phoneNo": {
+            "type": "number",
+            "description": "Contact phone number"
+          }
+        }
+      },
+      "PaymentInfo": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Payment transaction ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Payment status"
+          }
+        }
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated unique identifier"
+          },
+          "shippingInfo": {
+            "$ref": "#/components/schemas/ShippingInfo"
+          },
+          "orderItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItem"
+            }
+          },
+          "user": {
+            "type": "string",
+            "description": "ID of the user who placed the order"
+          },
+          "paymentInfo": {
+            "$ref": "#/components/schemas/PaymentInfo"
+          },
+          "paidAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when payment was made"
+          },
+          "itemsPrice": {
+            "type": "number",
+            "description": "Price of all items combined"
+          },
+          "taxPrice": {
+            "type": "number",
+            "description": "Tax amount"
+          },
+          "shippingPrice": {
+            "type": "number",
+            "description": "Shipping cost"
+          },
+          "totalPrice": {
+            "type": "number",
+            "description": "Total order amount including tax and shipping"
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "Processing",
+              "Shipped",
+              "Delivered"
+            ],
+            "default": "Processing",
+            "description": "Current status of the order"
+          },
+          "deliveredAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when order was delivered"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date and time when order was created"
+          }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "price",
+          "category",
+          "Stock"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated unique identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Product name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed product description"
+          },
+          "price": {
+            "type": "number",
+            "description": "Product price"
+          },
+          "ratings": {
+            "type": "number",
+            "description": "Average product rating",
+            "default": 0
+          },
+          "images": {
+            "type": "array",
+            "description": "Array of product images. Note - when creating/updating products, send base64 encoded strings, not these objects.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "public_id": {
+                  "type": "string",
+                  "description": "Cloudinary public ID for the image"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Cloudinary URL to access the image"
+                }
+              }
+            }
+          },
+          "category": {
+            "type": "string",
+            "description": "Product category"
+          },
+          "Stock": {
+            "type": "number",
+            "description": "Available stock quantity"
+          },
+          "numOfReviews": {
+            "type": "number",
+            "description": "Number of reviews",
+            "default": 0
+          },
+          "reviews": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "rating": {
+                  "type": "number"
+                },
+                "comment": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "user": {
+            "type": "string",
+            "description": "ID of user who created the product"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "name": "iPhone 13 Pro",
+          "description": "6.1-inch Super Retina XDR display with ProMotion",
+          "price": 999.99,
+          "category": "Electronics",
+          "Stock": 50,
+          "images": [
+            {
+              "public_id": "products/iphone13",
+              "url": "https://res.cloudinary.com/example/image/upload/v1234/products/iphone13.jpg"
+            }
+          ]
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Auto-generated unique identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's full name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "description": "User's password"
+          },
+          "avatar": {
+            "type": "object",
+            "properties": {
+              "public_id": {
+                "type": "string",
+                "description": "Cloudinary public ID for the avatar image"
+              },
+              "url": {
+                "type": "string",
+                "description": "URL to access the avatar image"
+              }
+            },
+            "description": "User's avatar image information (optional, default provided)"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "default": "user"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "example": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "password": "password123",
+          "role": "user",
+          "avatar": {
+            "public_id": "avatars/123",
+            "url": "https://res.cloudinary.com/example/image/upload/v1234/avatars/123.jpg"
+          }
+        }
+      },
+      "LoginInput": {
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        },
+        "example": {
+          "email": "john@example.com",
+          "password": "password123"
+        }
+      },
+      "RegisterInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          },
+          "avatar": {
+            "type": "string",
+            "format": "binary",
+            "description": "Optional user avatar image (base64 encoded)"
+          }
+        },
+        "example": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "password": "password123"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/order/new": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create a new order",
+        "description": "Place a new order with product details, shipping information and payment details",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "shippingInfo",
+                  "orderItems",
+                  "paymentInfo",
+                  "itemsPrice",
+                  "taxPrice",
+                  "shippingPrice",
+                  "totalPrice"
+                ],
+                "properties": {
+                  "shippingInfo": {
+                    "$ref": "#/components/schemas/ShippingInfo"
+                  },
+                  "orderItems": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/OrderItem"
+                    }
+                  },
+                  "paymentInfo": {
+                    "$ref": "#/components/schemas/PaymentInfo"
+                  },
+                  "itemsPrice": {
+                    "type": "number"
+                  },
+                  "taxPrice": {
+                    "type": "number"
+                  },
+                  "shippingPrice": {
+                    "type": "number"
+                  },
+                  "totalPrice": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "order": {
+                      "$ref": "#/components/schemas/Order"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/order/{id}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get order details",
+        "description": "Get detailed information about a specific order",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "order": {
+                      "$ref": "#/components/schemas/Order"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      }
+    },
+    "/orders/me": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get my orders",
+        "description": "Get all orders placed by the currently logged in user",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          }
+        }
+      }
+    },
+    "/admin/orders": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get all orders",
+        "description": "Retrieve a list of all orders (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "totalAmount": {
+                      "type": "number"
+                    },
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          }
+        }
+      }
+    },
+    "/admin/order/{id}": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Update order status",
+        "description": "Update the status of an order (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "Processing",
+                      "Shipped",
+                      "Delivered"
+                    ],
+                    "description": "New order status"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order status updated successfully"
+          },
+          "400": {
+            "description": "Invalid status or order already delivered"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Delete order",
+        "description": "Remove an order from the database (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order deleted successfully"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get all products",
+        "description": "Fetch all products with filtering, pagination, and search capabilities",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search products by name"
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter products by category"
+          },
+          {
+            "in": "query",
+            "name": "price[gte]",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum price filter"
+          },
+          {
+            "in": "query",
+            "name": "price[lte]",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Maximum price filter"
+          },
+          {
+            "in": "query",
+            "name": "ratings[gte]",
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum ratings filter"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number for pagination"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of products per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    },
+                    "productsCount": {
+                      "type": "number"
+                    },
+                    "resultPerPage": {
+                      "type": "number"
+                    },
+                    "filteredProductsCount": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/products": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get all products (Admin)",
+        "description": "Get all products for admin dashboard without pagination",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all products for admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Product"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          }
+        }
+      }
+    },
+    "/admin/product/new": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Create a new product",
+        "description": "Add a new product to the database (Admin only). For images, send an array of base64-encoded image strings which will be uploaded to Cloudinary.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "description",
+                  "price",
+                  "category",
+                  "Stock"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "number"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "Stock": {
+                    "type": "number"
+                  },
+                  "images": {
+                    "type": "array",
+                    "description": "Array of base64 encoded image strings which will be uploaded to Cloudinary",
+                    "items": {
+                      "type": "string",
+                      "format": "byte",
+                      "description": "Base64 encoded image string (e.g. \"data:image/jpeg;base64,/9j/4AAQ...\")"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "name": "iPhone 15 Pro",
+                "description": "Apple's latest flagship phone with advanced features",
+                "price": 999.99,
+                "category": "Electronics",
+                "Stock": 50,
+                "images": [
+                  "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
+                  "data:image/jpeg;base64,/9j/5BBQSkZJRgABA..."
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "product": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          }
+        }
+      }
+    },
+    "/admin/product/{id}": {
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Update a product",
+        "description": "Update an existing product by ID (Admin only). For images, send an array of base64-encoded image strings which will be uploaded to Cloudinary.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "number"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "Stock": {
+                    "type": "number"
+                  },
+                  "images": {
+                    "type": "array",
+                    "description": "Array of base64 encoded image strings which will be uploaded to Cloudinary",
+                    "items": {
+                      "type": "string",
+                      "format": "byte",
+                      "description": "Base64 encoded image string (e.g. \"data:image/jpeg;base64,/9j/4AAQ...\")"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "name": "iPhone 15 Pro",
+                "description": "Updated description with new features",
+                "price": 949.99,
+                "category": "Electronics",
+                "Stock": 75,
+                "images": [
+                  "data:image/jpeg;base64,/9j/4AAQSkZJRgABA...",
+                  "data:image/jpeg;base64,/9j/5BBQSkZJRgABA..."
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "product": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Delete a product",
+        "description": "Remove a product from the database (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product deleted successfully"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/product/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get product details",
+        "description": "Get detailed information about a specific product",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "product": {
+                      "$ref": "#/components/schemas/Product"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/review": {
+      "put": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Create or update a review",
+        "description": "Add a new review or update an existing review for a product",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "productId",
+                  "rating",
+                  "comment"
+                ],
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "ID of the product to review"
+                  },
+                  "rating": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 5,
+                    "description": "Rating from 1 to 5"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "Review comment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Review updated successfully"
+          },
+          "201": {
+            "description": "Review created successfully"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/reviews": {
+      "get": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Get all reviews for a product",
+        "description": "Retrieve all reviews for a specific product",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the product to get reviews for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reviews retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "reviews": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "rating": {
+                            "type": "number"
+                          },
+                          "comment": {
+                            "type": "string"
+                          },
+                          "_id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Delete a review",
+        "description": "Remove a specific review from a product",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the product containing the review"
+          },
+          {
+            "in": "query",
+            "name": "reviewId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID of the review to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Review deleted successfully"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "404": {
+            "description": "Review not found or Product not found"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "User Authentication"
+        ],
+        "summary": "Register a new user",
+        "description": "Create a new user account with name, email, password and optional profile picture",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "User Authentication"
+        ],
+        "summary": "Login a user",
+        "description": "Authenticate a user and return JWT token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Please provide email and password"
+          },
+          "401": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/password/forgot": {
+      "post": {
+        "tags": [
+          "User Authentication"
+        ],
+        "summary": "Request password reset",
+        "description": "Send password reset email with token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent successfully"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/password/reset/{token}": {
+      "put": {
+        "tags": [
+          "User Authentication"
+        ],
+        "summary": "Reset password",
+        "description": "Reset password using token received in email",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Password reset token sent to email"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "password",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully"
+          },
+          "400": {
+            "description": "Token is invalid or has expired"
+          },
+          "500": {
+            "description": "Server Error"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": [
+          "User Authentication"
+        ],
+        "summary": "Log out a user",
+        "description": "Log out the user by clearing authentication cookies",
+        "responses": {
+          "200": {
+            "description": "Logged out successfully"
+          }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": [
+          "User Profile"
+        ],
+        "summary": "Get current user details",
+        "description": "Retrieves the profile of the currently logged in user",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          }
+        }
+      }
+    },
+    "/password/update": {
+      "put": {
+        "tags": [
+          "User Profile"
+        ],
+        "summary": "Update user password",
+        "description": "Update the password for the currently logged in user",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "oldPassword",
+                  "newPassword",
+                  "confirmPassword"
+                ],
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully"
+          },
+          "400": {
+            "description": "Old password is incorrect or passwords do not match"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          }
+        }
+      }
+    },
+    "/me/update": {
+      "put": {
+        "tags": [
+          "User Profile"
+        ],
+        "summary": "Update user profile",
+        "description": "Update the name and email for the currently logged in user",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional - new profile picture"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get all users",
+        "description": "Retrieve a list of all user accounts (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          }
+        }
+      }
+    },
+    "/admin/user/{id}": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Get user details",
+        "description": "Retrieve details for a specific user (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Update user role",
+        "description": "Change a user's role (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "role"
+                ],
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User role updated successfully"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Delete user",
+        "description": "Delete a user account (Admin only)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "401": {
+            "description": "Please login to access this resource"
+          },
+          "403": {
+            "description": "Admin role required"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

@@ -4,6 +4,8 @@
  */
 
 import swaggerJSDoc from "swagger-jsdoc";
+import fs from "fs";
+import path from "path";
 
 // Swagger definition
 const swaggerOptions = {
@@ -45,5 +47,12 @@ const swaggerOptions = {
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
+// Function to save Swagger JSON to file for type generation
+export function saveSwaggerJson(): void {
+  const outputPath = path.resolve(process.cwd(), "swagger.json");
+  fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2), { encoding: "utf8" });
+  console.log(`✅ Swagger JSON saved to ${outputPath}`);
+}
 
 export default swaggerSpec;

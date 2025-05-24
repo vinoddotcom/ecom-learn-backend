@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../utils/errorhandler";
 
 interface MongoError extends Error {
@@ -19,6 +19,7 @@ const errorMiddleware = (
   err: Error | ErrorHandler | MongoError | CastError | JWTError,
   req: Request,
   res: Response,
+  next: NextFunction
 ) => {
   let statusCode = 500;
   let message = "Internal Server Error";
@@ -57,11 +58,18 @@ const errorMiddleware = (
     }
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
+  // Check if response is valid and has not been sent
+  if (res && typeof res.status === "function" && !res.headersSent) {
+    res.status(statusCode).json({
+      success: false,
+      message,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  } else {
+    // Log error if response is invalid or already sent
+    console.error("Error in error middleware:", err);
+    if (next) next(err); // Pass error to default Express error handler
+  }
 };
 
 export default errorMiddleware;
