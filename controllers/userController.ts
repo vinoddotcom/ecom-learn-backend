@@ -5,6 +5,7 @@ import User from "../models/userModel";
 import sendToken from "../utils/jwtToken";
 import crypto from "crypto";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary";
+import { UploadedFile } from "express-fileupload";
 
 // Register a User
 export const registerUser = catchAsyncErrors(
@@ -12,22 +13,22 @@ export const registerUser = catchAsyncErrors(
     try {
       const { name, email, password } = req.body;
 
-      let avatarData = {
-        public_id: "default_avatar/default",
-        url: "https://res.cloudinary.com/demo/image/upload/v1580125506/default_avatar.png",
-      };
+      let avatarData = null;
 
       // Upload avatar image to Cloudinary if provided
-      if (req.body.avatar) {
-        const myCloud = await uploadToCloudinary(req.body.avatar, "avatars", {
-          width: 150,
-          crop: "scale",
-        });
+      if (req.files && (req.files.avatar as UploadedFile)) {
+        const imageFiles = Array.isArray(req.files.avatar) ? (req.files.avatar as UploadedFile[]) : [req.files.avatar as UploadedFile];
+        if (imageFiles.length) {
+          const myCloud = await uploadToCloudinary(imageFiles[0]!.data, "avatars", {
+            width: 150,
+            crop: "scale",
+          });
 
-        avatarData = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
+          avatarData = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        }
       }
 
       const user = await User.create({

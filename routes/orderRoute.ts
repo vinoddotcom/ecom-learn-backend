@@ -102,8 +102,18 @@ const router = express.Router();
  *           items:
  *             $ref: '#/components/schemas/OrderItem'
  *         user:
- *           type: string
- *           description: ID of the user who placed the order
+ *           type: object
+ *           properties:
+ *             _id:
+ *               type: string
+ *               description: Name of the user who placed the order
+ *             name:
+ *               type: string
+ *               description: Name of the user who placed the order
+ *             email:
+ *               type: string
+ *               description: Email of the user who placed the order
+ *           description: User details who placed the order (populated from User model)
  *         paymentInfo:
  *           $ref: '#/components/schemas/PaymentInfo'
  *         paidAt:
