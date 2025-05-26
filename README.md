@@ -15,6 +15,146 @@ A fully featured RESTful API backend for an e-commerce platform built with Node.
 - Comprehensive test coverage with Vitest
 - API documentation with Swagger/OpenAPI
 
+## Detailed Local Development Setup Guide
+
+### Prerequisites
+
+- Node.js (v14.x or higher)
+- npm or yarn
+- MongoDB Atlas account (for cloud database)
+- Cloudinary account (for image upload functionality)
+- Git
+
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/vinoddotcom/ecom-learn-backend.git
+cd ecom-learn-backend
+```
+
+### Step 2: Install Dependencies
+
+```bash
+npm install
+```
+
+### Step 3: Set Up Environment Variables
+
+Create a `.env` file in the project root directory with the following variables:
+
+```
+# MongoDB Configuration
+MONGODB_USER_NAME=your_mongodb_username
+MONGODB_PASSWORD=your_mongodb_password
+MONGODB_CLUSTER=cluster0
+MONGODB_DATABASE=ecommerceDB
+
+# Server Configuration
+PORT=5000
+JWT_SECRET=your_secure_jwt_secret_key_here
+JWT_EXPIRE=7d
+
+# Cloudinary Configuration
+CLOUDINARY_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+CLOUDINARY_URL=cloudinary://{api_key}:{api_secret}@{cloud_name}
+```
+
+Replace the placeholder values with your actual credentials:
+
+- **MongoDB Configuration**:
+
+  - Create a MongoDB Atlas account at https://www.mongodb.com/cloud/atlas
+  - Set up a new cluster (the free tier works for development)
+  - Create a database user with read/write privileges
+  - Use those credentials for MONGODB_USER_NAME and MONGODB_PASSWORD
+  - Set MONGODB_CLUSTER to your cluster name (usually "cluster0")
+  - MONGODB_DATABASE can be any name you prefer for your database
+
+- **JWT Configuration**:
+
+  - JWT_SECRET should be a secure random string
+  - JWT_EXPIRE determines how long the authentication tokens will remain valid
+
+- **Cloudinary Configuration**:
+  - Create a Cloudinary account at https://cloudinary.com
+  - Find your credentials in the Cloudinary dashboard
+  - Set up CLOUDINARY_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET from your dashboard
+  - The CLOUDINARY_URL follows the format: `cloudinary://{api_key}:{api_secret}@{cloud_name}`
+
+### Step 4: Start Development Server
+
+```bash
+npm run dev
+```
+
+This will start the development server with hot-reloading enabled. The server will run on http://localhost:5000 by default (or the port you specified in your .env file).
+
+### Step 5: Access the API Documentation
+
+Once the server is running, you can access the Swagger API documentation at:
+
+```
+http://localhost:5000/api-docs
+```
+
+This interactive documentation allows you to explore and test all API endpoints.
+
+### Step 6: Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+```
+
+### Step 7: Building for Production
+
+```bash
+# Lint the code
+npm run lint
+
+# Build the project
+npm run build
+
+# Start the production server
+npm start
+```
+
+### Troubleshooting
+
+1. **MongoDB Connection Issues**:
+
+   - Verify that your MongoDB Atlas credentials are correct
+   - Check if your IP address is whitelisted in MongoDB Atlas
+   - Ensure your MongoDB user has the proper database access privileges
+
+2. **Cloudinary Connection Issues**:
+
+   - Verify your Cloudinary credentials
+   - Check if you've set up the correct permissions in your Cloudinary account
+
+3. **Port Already in Use**:
+
+   - If port 5000 is already in use, change the PORT value in your .env file
+
+4. **Node Version Issues**:
+   - This project works best with Node.js v14.x or higher
+   - Use nvm (Node Version Manager) to install and switch to a compatible Node.js version:
+     ```
+     nvm install 14
+     nvm use 14
+     ```
+
 ## API Documentation
 
 This project includes Swagger/OpenAPI documentation for easy API exploration and testing.
@@ -33,63 +173,6 @@ The documentation provides:
 - Request/response schemas
 - Authentication requirements
 - Interactive API testing capability
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v14.x or higher)
-- MongoDB (local installation or MongoDB Atlas account)
-- Cloudinary account (for image uploads)
-
-### Installation
-
-1. Clone the repository
-
-   ```bash
-   git clone https://github.com/your-username/ecom-learn-backend.git
-   cd ecom-learn-backend
-   ```
-
-2. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-3. Set up environment variables
-   Create a `.env` file in the project root with the following variables:
-
-   ```
-   PORT=5000
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   JWT_EXPIRE=5d
-   COOKIE_EXPIRE=5
-   CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-   CLOUDINARY_API_KEY=your_cloudinary_api_key
-   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-   ```
-
-4. Build the project
-
-   ```bash
-   npm run build
-   ```
-
-5. Start the server
-   ```bash
-   npm start
-   ```
-
-## Available Scripts
-
-- `npm start` - Start the production server
-- `npm run dev` - Start the development server with hot-reload
-- `npm run build` - Build the TypeScript code
-- `npm run test` - Run tests
-- `npm run test:coverage` - Run tests with coverage report
-- `npm run lint` - Run ESLint to check code quality
 
 ## API Routes
 
