@@ -5,6 +5,7 @@ This document provides detailed information about all available API endpoints in
 ## Base URL
 
 All endpoints are relative to the base URL:
+
 ```
 http://localhost:5000/api/v1
 ```
@@ -19,46 +20,48 @@ Protected endpoints use cookie-based authentication with JWT tokens.
 
 ## Endpoints Summary
 
-| Method | Endpoint                       | Description                          | Auth Required | Admin Only |
-|--------|--------------------------------|--------------------------------------|--------------|-----------|
-| POST   | /register                      | Register new user                    | No           | No        |
-| POST   | /login                         | Login user                           | No           | No        |
-| GET    | /logout                        | Logout user                          | Yes          | No        |
-| POST   | /password/forgot               | Request password reset               | No           | No        |
-| PUT    | /password/reset/:token         | Reset password with token            | No           | No        |
-| GET    | /me                            | Get user profile                     | Yes          | No        |
-| PUT    | /password/update               | Update user password                 | Yes          | No        |
-| PUT    | /me/update                     | Update user profile                  | Yes          | No        |
-| GET    | /admin/users                   | Get all users                        | Yes          | Yes       |
-| GET    | /admin/user/:id                | Get user details                     | Yes          | Yes       |
-| PUT    | /admin/user/:id                | Update user role                     | Yes          | Yes       |
-| DELETE | /admin/user/:id                | Delete user                          | Yes          | Yes       |
-| GET    | /products                      | Get all products                     | No           | No        |
-| GET    | /admin/products                | Get all products (admin)             | Yes          | Yes       |
-| POST   | /admin/product/new             | Create new product                   | Yes          | Yes       |
-| PUT    | /admin/product/:id             | Update product                       | Yes          | Yes       |
-| DELETE | /admin/product/:id             | Delete product                       | Yes          | Yes       |
-| GET    | /product/:id                   | Get product details                  | No           | No        |
-| PUT    | /review                        | Create/Update product review         | Yes          | No        |
-| GET    | /reviews                       | Get product reviews                  | No           | No        |
-| DELETE | /reviews                       | Delete review                        | Yes          | No        |
-| POST   | /order/new                     | Create new order                     | Yes          | No        |
-| GET    | /order/:id                     | Get order details                    | Yes          | No        |
-| GET    | /orders/me                     | Get logged in user orders            | Yes          | No        |
-| GET    | /admin/orders                  | Get all orders                       | Yes          | Yes       |
-| PUT    | /admin/order/:id               | Update order status                  | Yes          | Yes       |
-| DELETE | /admin/order/:id               | Delete order                         | Yes          | Yes       |
+| Method | Endpoint               | Description                  | Auth Required | Admin Only |
+| ------ | ---------------------- | ---------------------------- | ------------- | ---------- |
+| POST   | /register              | Register new user            | No            | No         |
+| POST   | /login                 | Login user                   | No            | No         |
+| GET    | /logout                | Logout user                  | Yes           | No         |
+| POST   | /password/forgot       | Request password reset       | No            | No         |
+| PUT    | /password/reset/:token | Reset password with token    | No            | No         |
+| GET    | /me                    | Get user profile             | Yes           | No         |
+| PUT    | /password/update       | Update user password         | Yes           | No         |
+| PUT    | /me/update             | Update user profile          | Yes           | No         |
+| GET    | /admin/users           | Get all users                | Yes           | Yes        |
+| GET    | /admin/user/:id        | Get user details             | Yes           | Yes        |
+| PUT    | /admin/user/:id        | Update user role             | Yes           | Yes        |
+| DELETE | /admin/user/:id        | Delete user                  | Yes           | Yes        |
+| GET    | /products              | Get all products             | No            | No         |
+| GET    | /admin/products        | Get all products (admin)     | Yes           | Yes        |
+| POST   | /admin/product/new     | Create new product           | Yes           | Yes        |
+| PUT    | /admin/product/:id     | Update product               | Yes           | Yes        |
+| DELETE | /admin/product/:id     | Delete product               | Yes           | Yes        |
+| GET    | /product/:id           | Get product details          | No            | No         |
+| PUT    | /review                | Create/Update product review | Yes           | No         |
+| GET    | /reviews               | Get product reviews          | No            | No         |
+| DELETE | /reviews               | Delete review                | Yes           | No         |
+| POST   | /order/new             | Create new order             | Yes           | No         |
+| GET    | /order/:id             | Get order details            | Yes           | No         |
+| GET    | /orders/me             | Get logged in user orders    | Yes           | No         |
+| GET    | /admin/orders          | Get all orders               | Yes           | Yes        |
+| PUT    | /admin/order/:id       | Update order status          | Yes           | Yes        |
+| DELETE | /admin/order/:id       | Delete order                 | Yes           | Yes        |
 
 ## Detailed Endpoint Specifications
 
 ### User Authentication & Management
 
 #### Register User
+
 ```
 POST /register
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe",
@@ -68,9 +71,11 @@ POST /register
 ```
 
 **Files:**
+
 - `avatar` (optional): User profile image
 
 **Response (201 Created):**
+
 ```json
 {
   "success": true,
@@ -90,11 +95,13 @@ POST /register
 ```
 
 #### Login User
+
 ```
 POST /login
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -103,6 +110,7 @@ POST /login
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -122,11 +130,13 @@ POST /login
 ```
 
 #### Logout User
+
 ```
 GET /logout
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -135,11 +145,13 @@ GET /logout
 ```
 
 #### Forgot Password
+
 ```
 POST /password/forgot
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -147,6 +159,7 @@ POST /password/forgot
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -155,14 +168,17 @@ POST /password/forgot
 ```
 
 #### Reset Password
+
 ```
 PUT /password/reset/:token
 ```
 
 **Request Parameters:**
+
 - `token`: Password reset token received via email
 
 **Request Body:**
+
 ```json
 {
   "password": "newpassword123",
@@ -171,6 +187,7 @@ PUT /password/reset/:token
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -182,11 +199,13 @@ PUT /password/reset/:token
 ```
 
 #### Get User Details
+
 ```
 GET /me
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -205,11 +224,13 @@ GET /me
 ```
 
 #### Update Password
+
 ```
 PUT /password/update
 ```
 
 **Request Body:**
+
 ```json
 {
   "oldPassword": "password123",
@@ -219,6 +240,7 @@ PUT /password/update
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -230,11 +252,13 @@ PUT /password/update
 ```
 
 #### Update Profile
+
 ```
 PUT /me/update
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "John Updated",
@@ -243,9 +267,11 @@ PUT /me/update
 ```
 
 **Files:**
+
 - `avatar` (optional): Updated user profile image
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -258,11 +284,13 @@ PUT /me/update
 ### Admin User Management
 
 #### Get All Users (Admin)
+
 ```
 GET /admin/users
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -273,14 +301,17 @@ GET /admin/users
 ```
 
 #### Get User Details (Admin)
+
 ```
 GET /admin/user/:id
 ```
 
 **Request Parameters:**
+
 - `id`: User ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -291,14 +322,17 @@ GET /admin/user/:id
 ```
 
 #### Update User Role (Admin)
+
 ```
 PUT /admin/user/:id
 ```
 
 **Request Parameters:**
+
 - `id`: User ID
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe",
@@ -308,6 +342,7 @@ PUT /admin/user/:id
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true
@@ -315,14 +350,17 @@ PUT /admin/user/:id
 ```
 
 #### Delete User (Admin)
+
 ```
 DELETE /admin/user/:id
 ```
 
 **Request Parameters:**
+
 - `id`: User ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -333,11 +371,13 @@ DELETE /admin/user/:id
 ### Products
 
 #### Get All Products
+
 ```
 GET /products
 ```
 
 **Query Parameters:**
+
 - `keyword`: Search term
 - `category`: Filter by category
 - `price[gte]`: Minimum price
@@ -347,6 +387,7 @@ GET /products
 - `limit`: Results per page (default: 5)
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -360,14 +401,17 @@ GET /products
 ```
 
 #### Get Product Details
+
 ```
 GET /product/:id
 ```
 
 **Request Parameters:**
+
 - `id`: Product ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -378,11 +422,13 @@ GET /product/:id
 ```
 
 #### Create Product (Admin)
+
 ```
 POST /admin/product/new
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Product Name",
@@ -394,9 +440,11 @@ POST /admin/product/new
 ```
 
 **Files:**
+
 - `images`: Product images (up to 5)
 
 **Response (201 Created):**
+
 ```json
 {
   "success": true,
@@ -407,20 +455,25 @@ POST /admin/product/new
 ```
 
 #### Update Product (Admin)
+
 ```
 PUT /admin/product/:id
 ```
 
 **Request Parameters:**
+
 - `id`: Product ID
 
 **Request Body:**
+
 - Any product fields to update
 
 **Files:**
+
 - `images` (optional): Updated product images
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -431,14 +484,17 @@ PUT /admin/product/:id
 ```
 
 #### Delete Product (Admin)
+
 ```
 DELETE /admin/product/:id
 ```
 
 **Request Parameters:**
+
 - `id`: Product ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -447,11 +503,13 @@ DELETE /admin/product/:id
 ```
 
 #### Create/Update Review
+
 ```
 PUT /review
 ```
 
 **Request Body:**
+
 ```json
 {
   "productId": "product_id",
@@ -461,6 +519,7 @@ PUT /review
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true
@@ -468,14 +527,17 @@ PUT /review
 ```
 
 #### Get Product Reviews
+
 ```
 GET /reviews?id=product_id
 ```
 
 **Query Parameters:**
+
 - `id`: Product ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -486,15 +548,18 @@ GET /reviews?id=product_id
 ```
 
 #### Delete Review
+
 ```
 DELETE /reviews?productId=product_id&id=review_id
 ```
 
 **Query Parameters:**
+
 - `productId`: Product ID
 - `id`: Review ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true
@@ -504,11 +569,13 @@ DELETE /reviews?productId=product_id&id=review_id
 ### Orders
 
 #### Create New Order
+
 ```
 POST /order/new
 ```
 
 **Request Body:**
+
 ```json
 {
   "shippingInfo": {
@@ -540,6 +607,7 @@ POST /order/new
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "success": true,
@@ -550,14 +618,17 @@ POST /order/new
 ```
 
 #### Get Single Order
+
 ```
 GET /order/:id
 ```
 
 **Request Parameters:**
+
 - `id`: Order ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -568,11 +639,13 @@ GET /order/:id
 ```
 
 #### My Orders
+
 ```
 GET /orders/me
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -583,11 +656,13 @@ GET /orders/me
 ```
 
 #### Get All Orders (Admin)
+
 ```
 GET /admin/orders
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true,
@@ -599,14 +674,17 @@ GET /admin/orders
 ```
 
 #### Update Order Status (Admin)
+
 ```
 PUT /admin/order/:id
 ```
 
 **Request Parameters:**
+
 - `id`: Order ID
 
 **Request Body:**
+
 ```json
 {
   "status": "Shipped"
@@ -614,6 +692,7 @@ PUT /admin/order/:id
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true
@@ -621,14 +700,17 @@ PUT /admin/order/:id
 ```
 
 #### Delete Order (Admin)
+
 ```
 DELETE /admin/order/:id
 ```
 
 **Request Parameters:**
+
 - `id`: Order ID
 
 **Response (200 OK):**
+
 ```json
 {
   "success": true

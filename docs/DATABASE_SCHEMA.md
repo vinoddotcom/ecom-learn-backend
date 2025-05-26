@@ -42,19 +42,19 @@ The application uses MongoDB with Mongoose as the ODM (Object Document Mapper). 
 
 ### Fields
 
-| Field              | Type     | Properties                             | Description                                |
-|--------------------|----------|----------------------------------------|--------------------------------------------|
-| _id                | ObjectId | Auto-generated                         | Unique identifier                          |
-| name               | String   | Required, Trimmed                      | User's full name                           |
-| email              | String   | Required, Trimmed, Unique, Lowercase   | User's email address (used for login)      |
-| password           | String   | Required, Select: false                | Hashed password (never returned to client) |
-| avatar             | Object   | -                                      | User profile image                         |
-| avatar.public_id   | String   | -                                      | Cloudinary public ID                       |
-| avatar.url         | String   | -                                      | Cloudinary image URL                       |
-| role               | String   | Default: "user", Enum: ["user", "admin"] | User's role for authorization            |
-| resetPasswordToken | String   | -                                      | Token for password reset                   |
-| resetPasswordExpire| Date     | -                                      | Expiration date for reset token            |
-| createdAt          | Date     | Default: Date.now                      | Account creation timestamp                 |
+| Field               | Type     | Properties                               | Description                                |
+| ------------------- | -------- | ---------------------------------------- | ------------------------------------------ |
+| \_id                | ObjectId | Auto-generated                           | Unique identifier                          |
+| name                | String   | Required, Trimmed                        | User's full name                           |
+| email               | String   | Required, Trimmed, Unique, Lowercase     | User's email address (used for login)      |
+| password            | String   | Required, Select: false                  | Hashed password (never returned to client) |
+| avatar              | Object   | -                                        | User profile image                         |
+| avatar.public_id    | String   | -                                        | Cloudinary public ID                       |
+| avatar.url          | String   | -                                        | Cloudinary image URL                       |
+| role                | String   | Default: "user", Enum: ["user", "admin"] | User's role for authorization              |
+| resetPasswordToken  | String   | -                                        | Token for password reset                   |
+| resetPasswordExpire | Date     | -                                        | Expiration date for reset token            |
+| createdAt           | Date     | Default: Date.now                        | Account creation timestamp                 |
 
 ### Indexes
 
@@ -67,31 +67,28 @@ userSchema.index({ email: 1 }, { unique: true });
 
 ```javascript
 // Compare entered password with stored (hashed) password
-userSchema.methods.comparePassword = async function(enteredPassword) {
+userSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 // Generate JWT token for authentication
-userSchema.methods.getJWTToken = function() {
+userSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
 
 // Generate password reset token
-userSchema.methods.getResetPasswordToken = function() {
+userSchema.methods.getResetPasswordToken = function () {
   // Generate token
   const resetToken = crypto.randomBytes(20).toString("hex");
-  
+
   // Hash token and set to resetPasswordToken field
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-    
+  this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
   // Set token expire time
   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-  
+
   return resetToken;
 };
 ```
@@ -100,11 +97,11 @@ userSchema.methods.getResetPasswordToken = function() {
 
 ```javascript
 // Hash password before saving
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
-  
+
   this.password = await bcrypt.hash(this.password, 10);
 });
 ```
@@ -113,26 +110,26 @@ userSchema.pre("save", async function(next) {
 
 ### Fields
 
-| Field              | Type     | Properties                  | Description                                    |
-|--------------------|----------|-----------------------------|-------------------------------------------------|
-| _id                | ObjectId | Auto-generated              | Unique identifier                              |
-| name               | String   | Required, Trimmed           | Product name                                   |
-| description        | String   | Required                    | Product description                            |
-| price              | Number   | Required, Min: 0            | Product price                                  |
-| ratings            | Number   | Default: 0                  | Average product rating                         |
-| images             | Array    | -                           | Product images                                 |
-| images[].public_id | String   | -                           | Cloudinary public ID                           |
-| images[].url       | String   | -                           | Cloudinary image URL                           |
-| category           | String   | Required                    | Product category                               |
-| Stock              | Number   | Required, Default: 1        | Available inventory                            |
-| numOfReviews       | Number   | Default: 0                  | Total number of reviews                        |
-| reviews            | Array    | -                           | Array of review objects                        |
-| reviews[].user     | ObjectId | Ref: "User"                 | User who submitted the review (foreign key)    |
-| reviews[].name     | String   | -                           | Name of the reviewer                           |
-| reviews[].rating   | Number   | Required                    | Rating value (1-5)                             |
-| reviews[].comment  | String   | -                           | Review comment text                            |
-| user               | ObjectId | Required, Ref: "User"       | User who created the product (usually admin)   |
-| createdAt          | Date     | Default: Date.now           | Product creation timestamp                     |
+| Field              | Type     | Properties            | Description                                  |
+| ------------------ | -------- | --------------------- | -------------------------------------------- |
+| \_id               | ObjectId | Auto-generated        | Unique identifier                            |
+| name               | String   | Required, Trimmed     | Product name                                 |
+| description        | String   | Required              | Product description                          |
+| price              | Number   | Required, Min: 0      | Product price                                |
+| ratings            | Number   | Default: 0            | Average product rating                       |
+| images             | Array    | -                     | Product images                               |
+| images[].public_id | String   | -                     | Cloudinary public ID                         |
+| images[].url       | String   | -                     | Cloudinary image URL                         |
+| category           | String   | Required              | Product category                             |
+| Stock              | Number   | Required, Default: 1  | Available inventory                          |
+| numOfReviews       | Number   | Default: 0            | Total number of reviews                      |
+| reviews            | Array    | -                     | Array of review objects                      |
+| reviews[].user     | ObjectId | Ref: "User"           | User who submitted the review (foreign key)  |
+| reviews[].name     | String   | -                     | Name of the reviewer                         |
+| reviews[].rating   | Number   | Required              | Rating value (1-5)                           |
+| reviews[].comment  | String   | -                     | Review comment text                          |
+| user               | ObjectId | Required, Ref: "User" | User who created the product (usually admin) |
+| createdAt          | Date     | Default: Date.now     | Product creation timestamp                   |
 
 ### Indexes
 
@@ -144,41 +141,41 @@ productSchema.index({ category: 1 });
 productSchema.index({ price: 1 });
 
 // Text index for search functionality
-productSchema.index({ name: 'text', description: 'text' });
+productSchema.index({ name: "text", description: "text" });
 ```
 
 ## Order Schema
 
 ### Fields
 
-| Field                       | Type     | Properties                  | Description                                |
-|----------------------------|----------|-----------------------------|--------------------------------------------|
-| _id                        | ObjectId | Auto-generated              | Unique identifier                          |
-| shippingInfo               | Object   | Required                    | Shipping details                           |
-| shippingInfo.address       | String   | Required                    | Delivery address                           |
-| shippingInfo.city          | String   | Required                    | City                                       |
-| shippingInfo.state         | String   | Required                    | State/Province                             |
-| shippingInfo.country       | String   | Required                    | Country                                    |
-| shippingInfo.pinCode       | Number   | Required                    | ZIP/PIN code                               |
-| shippingInfo.phoneNo       | Number   | Required                    | Contact phone number                       |
-| orderItems                 | Array    | Required                    | Items in the order                         |
-| orderItems[].name          | String   | Required                    | Product name                               |
-| orderItems[].price         | Number   | Required                    | Product price at time of purchase          |
-| orderItems[].quantity      | Number   | Required                    | Order quantity                             |
-| orderItems[].image         | String   | Required                    | Product image URL                          |
-| orderItems[].product       | ObjectId | Required, Ref: "Product"    | Reference to product                       |
-| user                       | ObjectId | Required, Ref: "User"       | User who placed the order                  |
-| paymentInfo                | Object   | Required                    | Payment details                            |
-| paymentInfo.id             | String   | Required                    | Payment transaction ID                     |
-| paymentInfo.status         | String   | Required                    | Payment status                             |
-| paidAt                     | Date     | Required                    | Payment timestamp                          |
-| itemsPrice                 | Number   | Required, Default: 0        | Subtotal (before tax and shipping)         |
-| taxPrice                   | Number   | Required, Default: 0        | Tax amount                                 |
-| shippingPrice              | Number   | Required, Default: 0        | Shipping cost                              |
-| totalPrice                 | Number   | Required, Default: 0        | Order total                                |
-| orderStatus                | String   | Required, Default: "Processing" | Current order status                    |
-| deliveredAt                | Date     | -                           | Delivery timestamp                         |
-| createdAt                  | Date     | Default: Date.now           | Order creation timestamp                   |
+| Field                 | Type     | Properties                      | Description                        |
+| --------------------- | -------- | ------------------------------- | ---------------------------------- |
+| \_id                  | ObjectId | Auto-generated                  | Unique identifier                  |
+| shippingInfo          | Object   | Required                        | Shipping details                   |
+| shippingInfo.address  | String   | Required                        | Delivery address                   |
+| shippingInfo.city     | String   | Required                        | City                               |
+| shippingInfo.state    | String   | Required                        | State/Province                     |
+| shippingInfo.country  | String   | Required                        | Country                            |
+| shippingInfo.pinCode  | Number   | Required                        | ZIP/PIN code                       |
+| shippingInfo.phoneNo  | Number   | Required                        | Contact phone number               |
+| orderItems            | Array    | Required                        | Items in the order                 |
+| orderItems[].name     | String   | Required                        | Product name                       |
+| orderItems[].price    | Number   | Required                        | Product price at time of purchase  |
+| orderItems[].quantity | Number   | Required                        | Order quantity                     |
+| orderItems[].image    | String   | Required                        | Product image URL                  |
+| orderItems[].product  | ObjectId | Required, Ref: "Product"        | Reference to product               |
+| user                  | ObjectId | Required, Ref: "User"           | User who placed the order          |
+| paymentInfo           | Object   | Required                        | Payment details                    |
+| paymentInfo.id        | String   | Required                        | Payment transaction ID             |
+| paymentInfo.status    | String   | Required                        | Payment status                     |
+| paidAt                | Date     | Required                        | Payment timestamp                  |
+| itemsPrice            | Number   | Required, Default: 0            | Subtotal (before tax and shipping) |
+| taxPrice              | Number   | Required, Default: 0            | Tax amount                         |
+| shippingPrice         | Number   | Required, Default: 0            | Shipping cost                      |
+| totalPrice            | Number   | Required, Default: 0            | Order total                        |
+| orderStatus           | String   | Required, Default: "Processing" | Current order status               |
+| deliveredAt           | Date     | -                               | Delivery timestamp                 |
+| createdAt             | Date     | Default: Date.now               | Order creation timestamp           |
 
 ### Indexes
 
@@ -302,6 +299,7 @@ orderSchema.index({ createdAt: 1 });
 ### Indexing Strategy
 
 Critical fields that are frequently queried are indexed:
+
 - User email (unique index)
 - Product category
 - Product price
@@ -312,10 +310,12 @@ Critical fields that are frequently queried are indexed:
 ### Query Optimization
 
 1. **Pagination Implementation**:
+
    - API endpoints return paginated results
    - Controlled via `resultPerPage` parameter
 
 2. **Projection to Reduce Data Transfer**:
+
    - Select only needed fields in queries
    - Example: `User.findById(id).select('name email')`
 
@@ -326,16 +326,17 @@ Critical fields that are frequently queried are indexed:
 ### Data Aggregation
 
 Product statistics aggregation example:
+
 ```javascript
 // Calculate average rating and count of reviews
 await Product.aggregate([
   { $match: { _id: productId } },
-  { 
+  {
     $project: {
       averageRating: { $avg: "$reviews.rating" },
-      reviewCount: { $size: "$reviews" }
-    }
-  }
+      reviewCount: { $size: "$reviews" },
+    },
+  },
 ]);
 ```
 
@@ -344,6 +345,7 @@ await Product.aggregate([
 ### MongoDB Atlas Backup Strategy
 
 If using MongoDB Atlas:
+
 1. **Continuous Backups**: Point-in-time recovery
 2. **Scheduled Snapshots**: Daily backups with configurable retention
 3. **On-Demand Backups**: Manual backup before critical changes
@@ -351,7 +353,9 @@ If using MongoDB Atlas:
 ### Self-Hosted Backup Strategy
 
 If self-hosting MongoDB:
+
 1. **Automated Backups**:
+
    ```bash
    mongodump --uri="mongodb://username:password@host:port/ecommerceDB" --out=/backup/$(date +"%Y-%m-%d")
    ```

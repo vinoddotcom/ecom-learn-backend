@@ -29,18 +29,21 @@ This document provides detailed guidelines and best practices for developing and
 ### Local Development Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/vinoddotcom/ecom-learn-backend.git
    cd ecom-learn-backend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
    Create a `.env` file in the root directory:
+
    ```
    # MongoDB Configuration
    MONGODB_USER_NAME=your_mongodb_username
@@ -60,12 +63,14 @@ This document provides detailed guidelines and best practices for developing and
    ```
 
 4. **Run development server**
+
    ```bash
    npm run dev
    ```
 
 5. **Access API documentation**
    Once the server is running, access Swagger documentation at:
+
    ```
    http://localhost:5000/api-docs
    ```
@@ -153,6 +158,7 @@ ESLint rules are configured in `eslint.config.mjs`.
 - Define function parameter and return types
 
 Example:
+
 ```typescript
 // Good
 function calculateTotal(prices: number[]): number {
@@ -171,9 +177,10 @@ function calculateTotal(prices): any {
 - Prefer optional chaining (`?.`) and nullish coalescing (`??`) for safer access
 
 Example:
+
 ```typescript
 // Good
-const userName = user?.name ?? 'Anonymous';
+const userName = user?.name ?? "Anonymous";
 
 // Avoid
 const userName = user!.name;
@@ -185,7 +192,7 @@ Use type guards to narrow types in conditional blocks:
 
 ```typescript
 function processValue(value: string | number) {
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     // TypeScript knows value is a string here
     return value.toUpperCase();
   } else {
@@ -225,14 +232,15 @@ test/
 3. **Assertions**: Use expect statements
 
 Example:
-```typescript
-import { describe, it, expect } from 'vitest';
-import ErrorHandler from '../utils/errorhandler';
 
-describe('ErrorHandler', () => {
-  it('should create an error with message and status code', () => {
-    const error = new ErrorHandler('Not found', 404);
-    expect(error.message).toBe('Not found');
+```typescript
+import { describe, it, expect } from "vitest";
+import ErrorHandler from "../utils/errorhandler";
+
+describe("ErrorHandler", () => {
+  it("should create an error with message and status code", () => {
+    const error = new ErrorHandler("Not found", 404);
+    expect(error.message).toBe("Not found");
     expect(error.statusCode).toBe(404);
   });
 });
@@ -289,6 +297,7 @@ Follow the GitHub Flow branching strategy:
 ### Commit Messages
 
 Follow conventional commits pattern:
+
 ```
 feat: add user authentication
 fix: resolve order calculation issue
@@ -315,6 +324,7 @@ refactor: improve error handling
 - Add example usage for complex functions
 
 Example:
+
 ```typescript
 /**
  * Generates a JWT token for user authentication
@@ -335,6 +345,7 @@ const sendToken = (user: IUser, statusCode: number, res: Response): Response => 
 - Include example requests and responses
 
 Example:
+
 ```typescript
 /**
  * @openapi

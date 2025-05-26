@@ -27,13 +27,14 @@ The application uses JSON Web Tokens (JWT) for authentication:
 - **Token Refresh Strategy**: Implement sliding expiration if needed
 
 Best practices:
+
 ```typescript
 // Setting secure HTTP-only cookies
-res.cookie('token', token, {
+res.cookie("token", token, {
   expires: new Date(Date.now() + cookieExpire * 24 * 60 * 60 * 1000),
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'PRODUCTION',
-  sameSite: 'strict'
+  secure: process.env.NODE_ENV === "PRODUCTION",
+  sameSite: "strict",
 });
 ```
 
@@ -47,7 +48,7 @@ export const authorizeRoles = (...roles: string[]) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return next(
         new ErrorHandler(
-          `Role: ${req.user?.role || 'unknown'} is not allowed to access this resource`,
+          `Role: ${req.user?.role || "unknown"} is not allowed to access this resource`,
           403
         )
       );
@@ -70,11 +71,13 @@ Password handling security features:
 ### Sensitive Data Handling
 
 1. **PII Protection**:
+
    - Avoid storing unnecessary PII
    - Implement data minimization practices
    - Consider pseudonymization where appropriate
 
 2. **Payment Information**:
+
    - Never store raw credit card details
    - Use tokenization via payment processors
    - Implement PCI DSS compliant practices if handling payment data
@@ -87,6 +90,7 @@ Password handling security features:
 ### Data Validation & Sanitization
 
 1. **Input Validation**:
+
    - Validate all input data against schemas
    - Implement strong type checking with TypeScript
    - Use mongoose schema validation
@@ -119,10 +123,7 @@ app.use(
 Recommendation: Restrict CORS in production:
 
 ```typescript
-const allowedOrigins = [
-  'https://yourdomain.com', 
-  'https://api.yourdomain.com'
-];
+const allowedOrigins = ["https://yourdomain.com", "https://api.yourdomain.com"];
 
 app.use(
   cors({
@@ -130,7 +131,7 @@ app.use(
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -144,17 +145,17 @@ app.use(
 Implement rate limiting to prevent abuse:
 
 ```typescript
-import rateLimit from 'express-rate-limit';
+import rateLimit from "express-rate-limit";
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
-  message: { success: false, message: 'Too many requests, please try again later.' }
+  message: { success: false, message: "Too many requests, please try again later." },
 });
 
-app.use('/api/v1/', apiLimiter);
+app.use("/api/v1/", apiLimiter);
 ```
 
 ### API Versioning
@@ -170,11 +171,13 @@ Current API is versioned as `/api/v1/`. Maintain this pattern for future changes
 ### Dependency Management
 
 1. **Regular Updates**:
+
    - Run `npm audit` regularly to check for vulnerabilities
    - Update dependencies with security fixes promptly
    - Use `npm audit fix` when safe to do so
 
 2. **Lock Files**:
+
    - Maintain `package-lock.json` for dependency pinning
    - Use exact versions for critical dependencies
 
@@ -195,6 +198,7 @@ Current API is versioned as `/api/v1/`. Maintain this pattern for future changes
 ### Environment Variables
 
 1. **Secrets Management**:
+
    - Never commit .env files to version control
    - Use environment-specific configuration
    - Consider using a secrets manager for production
@@ -209,6 +213,7 @@ Current API is versioned as `/api/v1/`. Maintain this pattern for future changes
 If using Docker:
 
 1. **Base Image Security**:
+
    - Use official, minimal base images
    - Regularly update base images
    - Scan container images for vulnerabilities
@@ -219,6 +224,7 @@ If using Docker:
    - Limit container capabilities
 
 Example Dockerfile improvements:
+
 ```dockerfile
 FROM node:16-alpine AS builder
 WORKDIR /app
@@ -242,11 +248,13 @@ CMD ["node", "dist/server.js"]
 ### Secure Logging
 
 1. **Log Management**:
+
    - Avoid logging sensitive information
    - Implement log rotation and retention policies
    - Use structured logging formats
 
 2. **Security Events**:
+
    - Log authentication events (success/failure)
    - Log authorization failures
    - Log suspicious activities (multiple failed logins, etc.)
@@ -259,6 +267,7 @@ CMD ["node", "dist/server.js"]
 ### Security Monitoring
 
 1. **Anomaly Detection**:
+
    - Monitor for unusual patterns
    - Set alerts for suspicious activities
    - Implement logging thresholds
@@ -273,6 +282,7 @@ CMD ["node", "dist/server.js"]
 ### Injection Protection
 
 MongoDB injection protection through Mongoose:
+
 ```typescript
 // Safe: Uses Mongoose schema validation and query building
 const user = await User.findOne({ email: req.body.email });
@@ -284,6 +294,7 @@ const user = await User.findOne({ email: req.body.email });
 ### Broken Authentication
 
 Authentication protections:
+
 - Secure password storage with bcrypt
 - Account lockout after multiple failed attempts (recommended)
 - Secure session management via HTTP-only cookies
@@ -291,6 +302,7 @@ Authentication protections:
 ### Sensitive Data Exposure
 
 Data protection measures:
+
 - Proper error handling to avoid leaking sensitive information
 - HTTPS enforcement in production
 - Data minimization principles
@@ -302,6 +314,7 @@ Not applicable (no XML processing).
 ### Broken Access Control
 
 Authorization protections:
+
 - Role-based access control implementation
 - Validation of user permissions before actions
 - Resource ownership verification
@@ -309,13 +322,15 @@ Authorization protections:
 ### Security Misconfiguration
 
 Configuration security:
+
 - Different configurations per environment
-- Principle of least privilege 
+- Principle of least privilege
 - Regular security scans and updates
 
 ### Cross-Site Scripting (XSS)
 
 XSS protections:
+
 - Content-Security-Policy headers
 - Output encoding
 - Input validation
@@ -323,12 +338,14 @@ XSS protections:
 ### Insecure Deserialization
 
 Deserialization protection:
+
 - Avoid using `eval()` or unsafe deserialization
 - Validate untrusted data before processing
 
 ### Using Components with Known Vulnerabilities
 
 Dependency security:
+
 - Regular dependency updates
 - Vulnerability scanning
 - Minimal dependency footprint
@@ -336,6 +353,7 @@ Dependency security:
 ### Insufficient Logging & Monitoring
 
 Logging practices:
+
 - Comprehensive security event logging
 - Centralized log management
 - Real-time monitoring and alerts
@@ -347,18 +365,20 @@ Logging practices:
 Implement security headers:
 
 ```typescript
-import helmet from 'helmet';
+import helmet from "helmet";
 
 // Add to app.ts
 app.use(helmet());
-app.use(helmet.contentSecurityPolicy({
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'"],
-    styleSrc: ["'self'", "'unsafe-inline'"],
-    imgSrc: ["'self'", "data:", "*.cloudinary.com"],
-  },
-}));
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "*.cloudinary.com"],
+    },
+  })
+);
 ```
 
 ### Timeout Configuration
@@ -373,13 +393,14 @@ const options = {
 };
 
 // Express timeouts
-app.use(timeout('30s'));
-app.use(express.json({ limit: '10kb' }));
+app.use(timeout("30s"));
+app.use(express.json({ limit: "10kb" }));
 ```
 
 ### Network Security
 
 1. **Firewall Configuration**:
+
    - Restrict inbound connections to necessary ports
    - Implement network segmentation
    - Use VPC/subnets in cloud environments
@@ -396,11 +417,13 @@ app.use(express.json({ limit: '10kb' }));
 If serving EU users:
 
 1. **Data Subject Rights**:
+
    - Right to access personal data
    - Right to erasure ("right to be forgotten")
    - Right to data portability
 
 2. **Privacy by Design**:
+
    - Data minimization
    - Purpose limitation
    - Storage limitation
@@ -414,6 +437,7 @@ If serving EU users:
 If handling payment information:
 
 1. **Scope Minimization**:
+
    - Outsource payment processing when possible
    - Use tokenization to reduce PCI scope
 
@@ -428,10 +452,12 @@ If handling payment information:
 ### Automated Testing
 
 1. **SAST (Static Application Security Testing)**:
+
    - Use tools like ESLint with security plugins
    - Implement in CI pipeline
 
 2. **DAST (Dynamic Application Security Testing)**:
+
    - Use tools like OWASP ZAP
    - Schedule regular scans
 
@@ -442,10 +468,12 @@ If handling payment information:
 ### Manual Testing
 
 1. **Code Review**:
+
    - Security-focused code reviews
    - Use security checklists
 
 2. **Penetration Testing**:
+
    - Regular security assessments
    - Test authentication and authorization
    - API security testing

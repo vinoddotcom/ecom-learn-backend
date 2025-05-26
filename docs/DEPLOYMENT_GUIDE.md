@@ -62,6 +62,7 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 The project includes a Dockerfile for containerized deployment:
 
 1. **Build the Docker Image**:
+
    ```bash
    docker build -t ecommerce-backend .
    ```
@@ -76,7 +77,7 @@ The project includes a Dockerfile for containerized deployment:
 Create a `docker-compose.yml` file for running with related services:
 
 ```yaml
-version: '3'
+version: "3"
 
 services:
   app:
@@ -104,6 +105,7 @@ volumes:
 ```
 
 Run with:
+
 ```bash
 docker-compose up -d
 ```
@@ -115,21 +117,25 @@ docker-compose up -d
 #### Using AWS Elastic Beanstalk:
 
 1. **Install EB CLI**:
+
    ```bash
    pip install awsebcli
    ```
 
 2. **Initialize EB Project**:
+
    ```bash
    eb init
    ```
 
 3. **Create Environment**:
+
    ```bash
    eb create production-environment
    ```
 
 4. **Deploy Application**:
+
    ```bash
    eb deploy
    ```
@@ -147,21 +153,25 @@ docker-compose up -d
 ### Heroku Deployment
 
 1. **Install Heroku CLI**:
+
    ```bash
    npm install -g heroku
    ```
 
 2. **Login to Heroku**:
+
    ```bash
    heroku login
    ```
 
 3. **Create Heroku App**:
+
    ```bash
    heroku create ecommerce-backend-app
    ```
 
 4. **Set Environment Variables**:
+
    ```bash
    heroku config:set MONGODB_USER_NAME=username
    heroku config:set MONGODB_PASSWORD=password
@@ -237,6 +247,7 @@ jobs:
 ### MongoDB Data Migration
 
 1. **Export Data from Development**:
+
    ```bash
    mongoexport --uri="mongodb+srv://username:password@cluster.mongodb.net/ecommerceDB" --collection=products --out=products.json
    ```
@@ -260,29 +271,33 @@ When making schema changes:
 ### Implementing Monitoring
 
 1. **Add Application Metrics**:
+
    - Install monitoring packages:
      ```bash
      npm install prom-client winston
      ```
 
 2. **Configure Logging**:
+
    ```typescript
    // Add to your app.ts
-   import winston from 'winston';
+   import winston from "winston";
 
    const logger = winston.createLogger({
-     level: 'info',
+     level: "info",
      format: winston.format.json(),
      transports: [
-       new winston.transports.File({ filename: 'error.log', level: 'error' }),
-       new winston.transports.File({ filename: 'combined.log' }),
+       new winston.transports.File({ filename: "error.log", level: "error" }),
+       new winston.transports.File({ filename: "combined.log" }),
      ],
    });
 
-   if (process.env.NODE_ENV !== 'production') {
-     logger.add(new winston.transports.Console({
-       format: winston.format.simple(),
-     }));
+   if (process.env.NODE_ENV !== "production") {
+     logger.add(
+       new winston.transports.Console({
+         format: winston.format.simple(),
+       })
+     );
    }
    ```
 
@@ -297,10 +312,12 @@ When making schema changes:
 ### Horizontal Scaling
 
 1. **Stateless Design**:
+
    - Ensure the application is stateless to scale horizontally
    - Use Redis or similar for session management if needed
 
 2. **Load Balancing**:
+
    - Configure load balancers in cloud environments
    - Use Nginx as a reverse proxy in self-hosted setups
 
@@ -312,6 +329,7 @@ When making schema changes:
 ### Vertical Scaling
 
 1. **Resource Optimization**:
+
    - Monitor memory usage and optimize
    - Use Node.js clustering to utilize multiple CPU cores
 
@@ -324,6 +342,7 @@ When making schema changes:
 ### Database Backup
 
 1. **Scheduled Backups**:
+
    - MongoDB Atlas automated backups
    - Custom backup scripts using `mongodump`
 
@@ -334,6 +353,7 @@ When making schema changes:
 ### Application Backup
 
 1. **Code Repository**:
+
    - Maintain Git repository with tags for releases
    - Archive configurations separately
 
@@ -346,11 +366,13 @@ When making schema changes:
 ### Common Issues
 
 1. **Connection Problems**:
+
    - Check network connectivity
    - Verify MongoDB connection string
    - Check firewall settings
 
 2. **Performance Issues**:
+
    - Monitor CPU and memory usage
    - Check database query performance
    - Look for memory leaks
@@ -362,11 +384,13 @@ When making schema changes:
 ### Debugging in Production
 
 1. **Enable Detailed Logging Temporarily**:
+
    ```bash
    heroku config:set LOG_LEVEL=debug
    ```
 
 2. **Check Application Logs**:
+
    ```bash
    heroku logs --tail
    # or

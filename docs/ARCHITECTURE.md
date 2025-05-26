@@ -77,16 +77,19 @@ Express routers that define API endpoints:
 
 ## Design Patterns
 
-1. **MVC Pattern**: 
+1. **MVC Pattern**:
+
    - Models: Database schemas (MongoDB/Mongoose)
    - Views: N/A (API returns JSON)
    - Controllers: Handle requests and responses
 
 2. **Middleware Pattern**:
+
    - Request processing pipeline with specialized middleware functions
    - Authentication, error handling, etc.
 
 3. **Repository Pattern**:
+
    - Models abstract database operations
    - Controllers use models as repositories
 
