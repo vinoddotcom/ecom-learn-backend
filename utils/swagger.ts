@@ -50,9 +50,15 @@ const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 // Function to save Swagger JSON to file for type generation
 export function saveSwaggerJson(): void {
-  const outputPath = path.resolve(process.cwd(), "swagger.json");
-  fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2), { encoding: "utf8" });
-  console.log(`✅ Swagger JSON saved to ${outputPath}`);
+  try {
+    const outputPath = path.resolve(process.cwd(), "swagger.json");
+    fs.writeFileSync(outputPath, JSON.stringify(swaggerSpec, null, 2), { encoding: "utf8" });
+    console.log(`✅ Swagger JSON saved to ${outputPath}`);
+  } catch (error) {
+    // Log error but don't crash the application
+    console.error(`⚠️ Could not save Swagger JSON: ${(error as { message: string }).message}`);
+    console.log("Application will continue without updating the swagger.json file");
+  }
 }
 
 export default swaggerSpec;

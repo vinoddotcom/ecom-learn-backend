@@ -7,7 +7,6 @@
 import express from "express";
 // Swagger setup
 import setupSwagger from "./setupSwagger";
-import setupSwaggerEditor from "./setupSwaggerEditor";
 import { saveSwaggerJson } from "./utils/swagger";
 import swaggerSpec from "./utils/swagger";
 import cookieParser from "cookie-parser";
@@ -28,10 +27,12 @@ import orderRoutes from "./routes/orderRoute";
 const app = express();
 // Setup Swagger API docs
 setupSwagger(app);
-// Setup Swagger Editor
-setupSwaggerEditor(app);
-// Generate Swagger JSON file for type generation
-saveSwaggerJson();
+
+// Generate Swagger JSON file for type generation only in development
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  console.log("Development mode: Generating Swagger JSON file");
+  saveSwaggerJson();
+}
 
 // Config
 if (process.env.NODE_ENV !== "PRODUCTION") {
@@ -64,6 +65,15 @@ app.get("/api/v1/swagger.json", (req, res) => {
   res.send(swaggerSpec);
 });
 
+// Health check route
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Server is healthy",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Apply Routes
 app.use("/api/v1", productRoutes);
 app.use("/api/v1", userRoutes);
@@ -77,11 +87,6 @@ if (process.env.NODE_ENV === "PRODUCTION") {
     res.sendFile(path.resolve(__dirname, "../frontend/build/index.html"));
   });
 }
-
-// Health check route
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok", message: "Server is running" });
-});
 
 // Middleware for Errors - should be last
 app.use(errorMiddleware);

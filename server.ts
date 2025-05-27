@@ -3,6 +3,10 @@ import { connectDB } from "./config/database";
 // We're importing cloudinary but not configuring it here anymore
 // as it's already configured in ./utils/cloudinary.ts
 import "./utils/cloudinary";
+import dotenv from "dotenv";
+
+// Load environment variables regardless of environment
+dotenv.config();
 
 // Handling Uncaught Exception
 process.on("uncaughtException", (err: unknown) => {
@@ -11,17 +15,6 @@ process.on("uncaughtException", (err: unknown) => {
   console.log(`Shutting down the server due to Uncaught Exception`);
   process.exit(1);
 });
-
-// Config
-import dotenv from "dotenv";
-
-// Define a type for the environment
-// type NodeEnv = "development" | "production" | "test" | "PRODUCTION";
-
-// Load environment variables
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  dotenv.config();
-}
 
 // Connecting to database
 connectDB();
