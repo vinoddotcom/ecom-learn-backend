@@ -66,7 +66,7 @@ app.get("/api/v1/swagger.json", (req, res) => {
 });
 
 // Health check route
-app.get("/api/v1/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
     message: "Server is healthy",

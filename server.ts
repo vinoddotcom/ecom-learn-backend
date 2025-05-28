@@ -19,9 +19,17 @@ process.on("uncaughtException", (err: unknown) => {
 // Connecting to database
 connectDB();
 
-const PORT = process.env.PORT || "4000";
-const server = app.listen(parseInt(PORT), () => {
-  console.log(`Server is working on http://localhost:${PORT}`);
+const PORT = process.env.PORT || "8000";
+const HOST = "0.0.0.0"; // Add this line
+
+const server = app.listen(parseInt(PORT), HOST, () => {
+  const address = server.address();
+  const actualPort = typeof address === 'object' && address ? address.port : PORT;
+  console.log(`Server is working on http://${HOST}:${actualPort}`);
+});
+// Define a route for the root path
+app.get("/", (req, res) => {
+  res.send("<html><body><h1>Hello World</h1></body></html>");
 });
 
 // Unhandled Promise Rejection

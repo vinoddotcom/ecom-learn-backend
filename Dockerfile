@@ -1,57 +1,43 @@
-# Use Node.js LTS version as the base image
-FROM node:22-alpine as builder
+# Use an official Node.js runtime as a parent image
+FROM node:18-alpine AS builder
 
-# Set working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json first for better caching
-COPY package*.json ./
+# Copy package.json and package-lock.json (or yarn.lock)
+COPY package.json package-lock.json* ./
 
-# Install dependencies with improved caching and security flags
-RUN npm ci --legacy-peer-deps --no-audit
+# Install project dependencies
+RUN npm install --production=false --legacy-peer-deps
 
-# Copy the rest of the application code
+# Copy the rest of the application's source code from your host to your image filesystem.
 COPY . .
 
-# Build the TypeScript project
+# Build the project
 RUN npm run build
 
-# Generate Swagger documentation after build
-RUN node -e "try { require('./dist/utils/swagger.js').saveSwaggerJson(); console.log('Swagger JSON generated'); } catch(e) { console.log('Failed to generate Swagger JSON:', e.message); }"
-
 # Production stage
-FROM node:22-alpine as production
+FROM node:18-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Add a non-root user for better security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Copy package.json and package-lock.json for production dependencies
+COPY package.json package-lock.json* ./
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Install only production dependencies
+RUN npm install --production=true --legacy-peer-deps
 
-# Install only production dependencies with security flags
-RUN npm ci --only=production --legacy-peer-deps --no-audit
-
-# Copy built files from builder stage
+# Copy the built application from the builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/swagger.json ./swagger.json
 
-# Create a directory for logs if your app uses it and set proper permissions for files
-RUN mkdir -p /app/logs && \
-    touch /app/swagger.json && \
-    chown -R appuser:appgroup /app && \
-    chmod -R 755 /app
-
-# Set the user to run the application
-USER appuser
-
-# Add healthcheck to verify container health
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD wget --no-verbose --tries=1 --spider http://localhost:4000/api/v1/health || exit 1
-
 # Expose the port the app runs on
-EXPOSE 4000
+# The docker-compose.yml exposes 4000 to the host, and maps it to port 80 internally.
+# The server.ts listens on process.env.PORT or 8000, and docker-compose sets PORT=4000
+# However, the healthcheck in docker-compose.yml points to http://localhost:8000/health
+# Let's assume the application inside the container should listen on 8000 as per healthcheck and server.ts default.
+# The docker-compose will map 4000 (host) to 8000 (container)
+EXPOSE 8000
 
-# Command to run the application
+# Define the command to run your app
 CMD ["node", "dist/server.js"]
