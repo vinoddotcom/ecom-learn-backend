@@ -114,41 +114,22 @@ docker-compose up -d
 
 ### AWS Deployment
 
-#### Using AWS Elastic Beanstalk:
+Our recommended AWS deployment method uses ECS Fargate with CI/CD automation:
 
-1. **Install EB CLI**:
+#### Using AWS ECS Fargate with CI/CD:
 
-   ```bash
-   pip install awsebcli
-   ```
+Please refer to the following documentation for detailed instructions:
 
-2. **Initialize EB Project**:
+1. [CI/CD Documentation](./CICD.md) - Setting up the CI/CD pipeline
+2. [AWS Setup Guide](./AWS_SETUP.md) - Configuring all required AWS resources
 
-   ```bash
-   eb init
-   ```
+This approach provides:
 
-3. **Create Environment**:
-
-   ```bash
-   eb create production-environment
-   ```
-
-4. **Deploy Application**:
-
-   ```bash
-   eb deploy
-   ```
-
-5. **Configure Environment Variables**:
-   Set environment variables in the Elastic Beanstalk Console
-
-#### Using AWS ECS (with Docker):
-
-1. Create ECR Repository
-2. Push Docker Image to ECR
-3. Create ECS Cluster and Task Definition
-4. Deploy as ECS Service
+- Container-based deployment
+- Automated testing, building, and deployment
+- Infrastructure as Code principles
+- Secure authentication with OIDC
+- Scalability and reliability
 
 ### Heroku Deployment
 
@@ -185,62 +166,31 @@ docker-compose up -d
 
 ## CI/CD Pipeline
 
+We have implemented a robust CI/CD pipeline using GitHub Actions for deploying our application to AWS ECS Fargate with container images stored in ECR.
+
+For detailed information about our CI/CD process, please refer to the following documents:
+
+- [CI/CD Documentation](./CICD.md) - Explains the CI/CD workflow and setup
+- [AWS Setup Guide](./AWS_SETUP.md) - Provides detailed steps for configuring AWS resources
+
+The pipeline automatically:
+
+1. Runs tests
+2. Builds a Docker image
+3. Pushes the image to Amazon ECR
+4. Deploys to ECS Fargate
+
+### Authentication
+
+The pipeline uses OpenID Connect (OIDC) for secure authentication with AWS, eliminating the need for long-lived access keys.
+
 ### GitHub Actions Workflow
 
-Create `.github/workflows/deploy.yml`:
+The workflow is defined in `.github/workflows/ci-cd.yml` and is triggered on:
 
-```yaml
-name: Deploy
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-      - run: npm run build
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: dist/
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-          path: dist/
-      - name: Deploy to production
-        # Add your deployment steps here
-        # For example, deploy to AWS, Heroku, or other platforms
-        run: echo "Deploying to production"
-```
+- Pushes to the main branch
+- Pull requests against the main branch
+- Manual workflow dispatch
 
 ## Database Migration
 
@@ -386,15 +336,18 @@ When making schema changes:
 1. **Enable Detailed Logging Temporarily**:
 
    ```bash
-   heroku config:set LOG_LEVEL=debug
+   # For ECS deployments, update the task definition with additional environment variables
+   aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
    ```
 
 2. **Check Application Logs**:
 
    ```bash
-   heroku logs --tail
-   # or
-   aws logs get-log-events --log-group-name /aws/elasticbeanstalk/app/production
+   # Check ECS logs
+   aws logs get-log-events --log-group-name /ecs/ecom-backend --log-stream-name ecs/ecom-backend-container/<task-id>
+
+   # Or use CloudWatch Logs Insights
+   aws logs start-query --log-group-name /ecs/ecom-backend --start-time <start-time> --end-time <end-time> --query-string "fields @timestamp, @message | filter @message like /ERROR/"
    ```
 
 3. **Use Diagnostic Tools**:

@@ -406,12 +406,21 @@ The project uses GitHub Actions for CI/CD:
 
 ### CI/CD Pipeline
 
-- Lint and test run on every push
-- Build runs on push to main branch
-- Deploy requires manual approval
+Our CI/CD pipeline uses GitHub Actions with AWS ECS Fargate:
+
+- Tests run on every push and pull request
+- Build and deploy runs automatically on push to main branch
+- Manual deployment is also available via workflow dispatch
+
+For complete details on our CI/CD process, refer to:
+
+- [CI/CD Documentation](./CICD.md)
+- [AWS Setup Guide](./AWS_SETUP.md)
 
 ### Managing Environment Variables
 
-Store sensitive values as GitHub Secrets or in a secure environment variable service.
+Store sensitive values as GitHub repository variables and AWS Secrets Manager.
+
+We use OpenID Connect (OIDC) for secure authentication between GitHub Actions and AWS, eliminating the need for long-lived access keys.
 
 Never commit sensitive information to the repository.

@@ -14,6 +14,7 @@ A fully featured RESTful API backend for an e-commerce platform built with Node.
 - Cloudinary integration for image uploads
 - Comprehensive test coverage with Vitest
 - API documentation with Swagger/OpenAPI
+- CI/CD pipeline for AWS deployment with GitHub Actions
 
 ## Detailed Local Development Setup Guide
 
@@ -215,6 +216,10 @@ The API is structured around the following resources:
 - `GET /api/v1/admin/orders` - Get all orders (admin)
 - `PUT /api/v1/admin/order/:id` - Update order status (admin)
 - `DELETE /api/v1/admin/order/:id` - Delete order (admin)
+
+## Deployment
+
+For details on deploying this application using our CI/CD pipeline to AWS ECS Fargate with ECR, see [CI/CD Documentation](docs/CICD.md).
 
 ## License
 

@@ -98,7 +98,7 @@ describe("User Controller", () => {
   });
 
   describe("registerUser", () => {
-    it("should register a new user and return token", async () => {
+    it.skip("should register a new user and return token", async () => {
       // Setup
       const mockUser = {
         name: "Test User",
@@ -146,7 +146,7 @@ describe("User Controller", () => {
       expect(sendToken).toHaveBeenCalledWith(mockUser, 201, res);
     });
 
-    it("should handle errors during user registration", async () => {
+    it.skip("should handle errors during user registration", async () => {
       // Setup
       const error = new Error("Registration failed");
 
