@@ -2,38 +2,40 @@
   "Version": "2012-10-17",
   "Statement": [
     {
+      "Sid": "ECRAuthToken",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRAccess",
       "Effect": "Allow",
       "Action": [
-        "ecr:GetDownloadUrlForLayer",
         "ecr:BatchCheckLayerAvailability",
-        "ecr:CompleteLayerUpload",
-        "ecr:InitiateLayerUpload",
-        "ecr:PutImage",
-        "ecr:UploadLayerPart",
+        "ecr:GetDownloadUrlForLayer",
         "ecr:BatchGetImage",
-        "ecr:GetAuthorizationToken"
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
       ],
-      "Resource": "*"
+      "Resource": "arn:aws:ecr:ap-south-1:587294124303:repository/ecom-learn/backend"
     },
     {
+      "Sid": "ECSAccessSpecific",
       "Effect": "Allow",
-      "Action": [
-        "ecs:DescribeTaskDefinition",
-        "ecs:RegisterTaskDefinition",
-        "ecs:UpdateService",
-        "ecs:DescribeServices"
-      ],
-      "Resource": "*"
+      "Action": ["ecs:UpdateService", "ecs:DescribeServices", "ecs:DescribeTaskDefinition"],
+      "Resource": [
+        "arn:aws:ecs:ap-south-1:587294124303:cluster/test-ecom-learn",
+        "arn:aws:ecs:ap-south-1:587294124303:service/test-ecom-learn/ecom-learn-backend-server-1-service-tws6nx5s",
+        "arn:aws:ecs:ap-south-1:587294124303:task-definition/ecom-learn-backend-server-1:*"
+      ]
     },
     {
+      "Sid": "CloudWatchLogsAccess",
       "Effect": "Allow",
-      "Action": ["iam:PassRole"],
-      "Resource": "*",
-      "Condition": {
-        "StringLike": {
-          "iam:PassedToService": "ecs-tasks.amazonaws.com"
-        }
-      }
+      "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "*"
     }
   ]
 }

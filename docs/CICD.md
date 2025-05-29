@@ -31,6 +31,8 @@ Detailed instructions for setting up all the required AWS resources can be found
 
 ### 3. Set Up OIDC Authentication
 
+For detailed instructions on setting up OIDC authentication with AWS, see the [OIDC Setup Guide](./OIDC_SETUP.md).
+
 #### 3.1 Create an Identity Provider in AWS IAM
 
 1. Go to AWS IAM Console
@@ -53,22 +55,64 @@ Detailed instructions for setting up all the required AWS resources can be found
    - Audience: `sts.amazonaws.com`
    - GitHub repo: `<your-github-org-or-username>/<your-github-repo>`
 6. Choose "Next"
-7. Attach policies:
-   - Use the policy document in `docs/aws-iam-permissions-policy.json`
-8. Give the role a name (e.g., `GitHubActionsECSDeployRole`)
-9. Create the role and note the ARN
+7. Create a custom policy with the specific permissions:
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "ECRAuthToken",
+         "Effect": "Allow",
+         "Action": "ecr:GetAuthorizationToken",
+         "Resource": "*"
+       },
+       {
+         "Sid": "ECRAccess",
+         "Effect": "Allow",
+         "Action": [
+           "ecr:BatchCheckLayerAvailability",
+           "ecr:GetDownloadUrlForLayer",
+           "ecr:BatchGetImage",
+           "ecr:PutImage",
+           "ecr:InitiateLayerUpload",
+           "ecr:UploadLayerPart",
+           "ecr:CompleteLayerUpload"
+         ],
+         "Resource": "arn:aws:ecr:ap-south-1:587294124303:repository/ecom-learn/backend"
+       },
+       {
+         "Sid": "ECSAccessSpecific",
+         "Effect": "Allow",
+         "Action": ["ecs:UpdateService", "ecs:DescribeServices", "ecs:DescribeTaskDefinition"],
+         "Resource": [
+           "arn:aws:ecs:ap-south-1:587294124303:cluster/test-ecom-learn",
+           "arn:aws:ecs:ap-south-1:587294124303:service/test-ecom-learn/ecom-learn-backend-server-1-service-tws6nx5s",
+           "arn:aws:ecs:ap-south-1:587294124303:task-definition/ecom-learn-backend-server-1:*"
+         ]
+       },
+       {
+         "Sid": "CloudWatchLogsAccess",
+         "Effect": "Allow",
+         "Action": ["logs:CreateLogStream", "logs:PutLogEvents"],
+         "Resource": "*"
+       }
+     ]
+   }
+   ```
+8. Give the role and policy descriptive names (e.g., `GitHubActionsOIDCRole` and `EcomBackendDeployPolicy`)
+9. Create the role and note the ARN for use in GitHub
 
-### 4. Configure GitHub Repository Secrets and Variables
+### 4. Configure GitHub Repository Variables
 
-In your GitHub repository settings, add the following variables:
+In your GitHub repository settings, go to Settings > Secrets and variables > Variables (repository level), and add the following variables:
 
-1. `AWS_REGION` (e.g., `us-east-1`)
-2. `AWS_ROLE_ARN` (the ARN of the IAM role created in step 3.2)
-3. `ECR_REPOSITORY` (e.g., `ecom-learn-backend`)
-4. `ECS_TASK_DEFINITION` (e.g., `ecom-backend-task`)
-5. `ECS_SERVICE` (e.g., `ecom-backend-service`)
-6. `ECS_CLUSTER` (e.g., `ecom-backend-cluster`)
-7. `CONTAINER_NAME` (e.g., `ecom-backend-container`)
+1. `AWS_REGION` - Set to `ap-south-1`
+2. `AWS_ROLE_ARN` - Set to the ARN of the IAM role created in step 3.2 (e.g., `arn:aws:iam::587294124303:role/GitHubActionsOIDCRole`)
+3. `ECR_REPOSITORY` - Set to `ecom-learn/backend`
+4. `ECS_SERVICE` - Set to `ecom-learn-backend-server-1-service-tws6nx5s`
+5. `ECS_CLUSTER` - Set to `test-ecom-learn`
+
+Make sure these values exactly match your AWS resources as specified in the IAM policy.
 
 ## Testing the Pipeline
 

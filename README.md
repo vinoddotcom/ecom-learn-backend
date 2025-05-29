@@ -14,7 +14,7 @@ A fully featured RESTful API backend for an e-commerce platform built with Node.
 - Cloudinary integration for image uploads
 - Comprehensive test coverage with Vitest
 - API documentation with Swagger/OpenAPI
-- CI/CD pipeline for AWS deployment with GitHub Actions
+- CI/CD pipeline for AWS deployment with GitHub Actions and OIDC authentication
 
 ## Detailed Local Development Setup Guide
 
@@ -219,7 +219,11 @@ The API is structured around the following resources:
 
 ## Deployment
 
-For details on deploying this application using our CI/CD pipeline to AWS ECS Fargate with ECR, see [CI/CD Documentation](docs/CICD.md).
+For details on deploying this application using our CI/CD pipeline to AWS ECS Fargate with ECR, see:
+
+- [CI/CD Documentation](docs/CICD.md)
+- [AWS Setup Guide](docs/AWS_SETUP.md)
+- [OIDC Authentication Setup](docs/OIDC_SETUP.md)
 
 ## License
 

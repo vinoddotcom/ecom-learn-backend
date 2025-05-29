@@ -421,6 +421,15 @@ For complete details on our CI/CD process, refer to:
 
 Store sensitive values as GitHub repository variables and AWS Secrets Manager.
 
-We use OpenID Connect (OIDC) for secure authentication between GitHub Actions and AWS, eliminating the need for long-lived access keys.
+We use OpenID Connect (OIDC) for secure authentication between GitHub Actions and AWS, eliminating the need for long-lived access keys. Our specific IAM permissions policy grants:
+
+- ECR access for specific repository (ecom-learn/backend)
+- ECS access for specific cluster, service, and task definitions
+- CloudWatch logs access
+
+For details on how OIDC is set up and the specific permissions needed, refer to:
+
+- [CI/CD Documentation](./CICD.md)
+- [AWS IAM Policy JSON](./aws-iam-permissions-policy.json)
 
 Never commit sensitive information to the repository.
